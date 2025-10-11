@@ -2,8 +2,8 @@
 import conexion from "../Config/db.js";
 
 export const crearTablero = (nombre, idUsuario, callback) => {
-  const sql = `CALL CrearTablero(?,?,?,CURDATE())`;
-  conexion.query(sql, [idUsuario, nombre, null], callback);
+  const sql = `CALL CrearTablero(?,?,NULL,CURDATE())`;
+  conexion.query(sql, [idUsuario, nombre], callback);
 };
 
 export const listarTablerosPorUsuario = (idUsuario, callback) => {
