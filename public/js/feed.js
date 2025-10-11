@@ -15,7 +15,7 @@ async function cargarImagenes() {
 
     if (!imagenes || imagenes.length === 0) {
       console.log("No hay más imágenes para mostrar");
-      window.removeEventListener("scroll", scrollHandler); // Detiene scroll infinito
+      window.removeEventListener("scroll", scrollHandler); 
       return;
     }
 
@@ -37,7 +37,7 @@ async function cargarImagenes() {
     pagina++; // Siguiente página
   } catch (err) {
     console.error("Error cargando imágenes:", err);
-    mostrarMensaje("No se pudieron cargar las imágenes 😢");
+    mostrarMensaje("No se pudieron cargar las imágenes");
   } finally {
     cargando = false;
   }
@@ -331,6 +331,10 @@ window.addEventListener("scroll", () => {
   if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
     cargarImagenes();
   }
+});
+
+document.getElementById("btnRegresar").addEventListener("click", () => {
+  bootstrap.Modal.getInstance(document.getElementById("modalImagen")).hide();
 });
 
 document.addEventListener("DOMContentLoaded", () => {

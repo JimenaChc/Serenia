@@ -10,8 +10,19 @@ document.getElementById("formRegistro")?.addEventListener("submit", async (e) =>
   });
 
   const data = await res.json();
-  alert(data.mensaje);
+  mostrarMensajeFlotante("Usuario registrado correctamente");
   if (res.ok) window.location.href = "login.html";
 });
+
+function mostrarMensajeFlotante(texto, duracion = 2000) {
+  const mensaje = document.getElementById("mensajeFlotante");
+  mensaje.textContent = texto;
+  mensaje.classList.add("show");
+
+  setTimeout(() => {
+    mensaje.classList.remove("show");
+  }, duracion);
+}
+
 
 

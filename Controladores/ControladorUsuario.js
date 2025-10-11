@@ -22,7 +22,7 @@ export async function login(req, res) {
       usuario,
     });
   } catch (error) {
-    res.status(401).json({ error });
+    res.status(401).json({ error: error.toString() });
   }
 }
 
