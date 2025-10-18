@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mis Tableros - Serenia</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/estilos.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<!--Header con perfil -->
+<header class="top-header d-flex align-items-center justify-content-between px-3 py-2">
+  <div class="d-flex align-items-center">
+    <a href="./Perfil.html">
+    <img src="./img/person_placeholder.jpg" alt="Perfil" class="perfil-mini">
+    </a>
+  </div>
+  <button class="btn-actividad" id="btnCerrar">Cerrar sesión</button>
+</header>
+
+<body>
+
+  <!-- Pantalla de tableros -->
+  <div id="pantallaTableros" class="container py-3">
+    <h2 class="text-center mb-3">Mis Tableros</h2>
+    <div id="contenedorTablerosGrid"></div>
+  </div>
+
+  <!-- Pantalla de imágenes del tablero -->
+   <div>
+  <div id="pantallaImagenesTablero" class="container py-3 d-none">
+    <button id="btnVolverTableros" class="btn btn-light mb-2">← Volver</button>
+    <h2 id="tituloTablero" class="text-center mb-3 fs-5"></h2>
+    <div id="contenedorImagenesTablero" class="feed"></div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="./js/tableros.js"></script>
+
+  <!-- Menú inferior tipo app móvil -->
+  <nav class="bottom-nav fixed-bottom bg-light border-top d-flex justify-content-around py-2">
+    <a href="./feed.html" class="nav-item active"><i class="bi bi-house-door"></i></a>
+    <a href="./Likes.html" class="nav-item"><i class="bi bi-suit-heart"></i></a>
+    <a href="./IniciarProyecto.html" class="nav-item center-btn"><i class="bi bi-plus-circle"></i></a>
+    <a href="./Cotizaciones.html" class="nav-item"><i class="bi bi-box"></i></a>
+    <a href="./Tableros.html" class="nav-item"><i class="bi bi-person"></i></a>
+  </nav>
+
+</body>
+</html>

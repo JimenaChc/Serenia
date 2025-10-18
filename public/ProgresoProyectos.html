@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progreso del Proyecto</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./css/estilos.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    .progress-container {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 30px 0;
+    }
+
+    .progress-container::before {
+      content: "";
+      background: #ddd;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      height: 4px;
+      width: 100%;
+      z-index: 1;
+    }
+
+    .progress-step {
+      background: #fff;
+      border: 2px solid #ddd;
+      color: #888;
+      border-radius: 50%;
+      height: 40px;
+      width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      transition: 0.3s;
+    }
+
+    .progress-step.active {
+      border-color: #4CAF50;
+      color: #4CAF50;
+      font-weight: bold;
+    }
+
+    .galeria {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .galeria img {
+      width: 100%;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .mensaje-sin-imagenes {
+      text-align: center;
+      color: #555;
+      margin-top: 20px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body class="mockup-page">
+
+  <header class="header-cotizaciones">
+    <h1>Progreso del Proyecto</h1>
+    <a href="./Cotizaciones.html"><i class="btn btn-light mb-2">← Volver</i></a>
+  </header>
+
+  <main class="container py-4">
+
+    <div id="barraProgreso" class="progress-container">
+      <div class="progress-step" id="step1">1</div>
+      <div class="progress-step" id="step2">2</div>
+      <div class="progress-step" id="step3">3</div>
+      <div class="progress-step" id="step4">4</div>
+    </div>
+
+    <h5 id="estadoActual" class="text-center mt-3"></h5>
+
+    <div id="imagenesProgreso" class="galeria mt-4"></div>
+    <p id="mensajeSinImagenes" class="mensaje-sin-imagenes" style="display:none;">No hay imágenes para esta cotización</p>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="./feed.html" class="nav-item"><i class="bi bi-house-door"></i></a>
+    <a href="./Likes.html" class="nav-item"><i class="bi bi-suit-heart"></i></a>
+    <a href="./IniciarProyecto.html" class="nav-item center-btn"><i class="bi bi-plus-circle"></i></a>
+    <a href="./Cotizaciones.html" class="nav-item"><i class="bi bi-box"></i></a>
+    <a href="./Tableros.html" class="nav-item"><i class="bi bi-person"></i></a>
+  </nav>
+
+  <script>
+    async function cargarProgreso() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const idCotizacion = urlParams.get("id");
+      if (!idCotizacion) {
+        document.getElementById("estadoActual").textContent = "Cotización no identificada";
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/cotizaciones/${idCotizacion}`);
+        if (!res.ok) {
+          console.error("Error al obtener cotización:", res.status);
+          document.getElementById("estadoActual").textContent = "No se pudo cargar la cotización";
+          return;
+        }
+
+        const data = await res.json();
+        console.log("Respuesta del servidor:", data);
+
+        const progreso = data[0]; //Tomamos el primer elemento
+        if (!progreso) {
+          document.getElementById("estadoActual").textContent = "Tu cotización aún esta siendo revisada";
+          return;
+        }
+
+        // Mostrar estado actual
+        document.getElementById("estadoActual").textContent = progreso.estado;
+
+        //Actualizar barra de progreso
+        const estados = ["En revisión", "Aprobada", "En desarrollo", "Finalizada"];
+        const stepIndex = estados.indexOf(progreso.estado) + 1;
+        for (let i = 1; i <= stepIndex; i++) {
+          document.getElementById(`step${i}`).classList.add("active");
+        }
+
+        //Mostrar imágenes
+        const contenedor = document.getElementById("imagenesProgreso");
+        const mensajeSinImagenes = document.getElementById("mensajeSinImagenes");
+        contenedor.innerHTML = ""; // Limpiar
+        if (progreso.Imagenes) {
+          const imagenes = progreso.Imagenes.split(",");
+          imagenes.forEach(url => {
+            const img = document.createElement("img");
+            img.src = url.trim();
+            contenedor.appendChild(img);
+          });
+        } else {
+          mensajeSinImagenes.style.display = "block";
+        }
+
+      } catch (error) {
+        console.error("Error al cargar progreso:", error);
+        document.getElementById("estadoActual").textContent = "Error al cargar cotización";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", cargarProgreso);
+  </script>
+</body>
+</html>

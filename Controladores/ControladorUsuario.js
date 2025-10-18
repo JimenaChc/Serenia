@@ -1,4 +1,4 @@
-import { registrarUsuario, loginUsuario } from "../Servicios/ServicioUsuario.js";
+import { registrarUsuario, loginUsuario , servicioActualizarDatosUsuario,servicioActualizarFotoPerfil,servicioObtenerUsuario} from "../Servicios/ServicioUsuario.js";
 
 export async function registrar(req, res) {
   const { Nombre, Apellidos, Correo, Contrasena, Telefono } = req.body;
@@ -25,6 +25,47 @@ export async function login(req, res) {
     res.status(401).json({ error: error.toString() });
   }
 }
+
+// Obtener usuario por ID
+export async function obtenerUsuario(req, res) {
+  const { idUsuario } = req.params;
+  try {
+    const usuario = await servicioObtenerUsuario(idUsuario);
+    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+    res.status(200).json(usuario);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener usuario" });
+  }
+}
+
+// Actualizar datos generales
+export async function actualizarDatosUsuario(req, res) {
+  const { idUsuario } = req.params;
+  const datos = req.body;
+  try {
+    const resultado = await servicioActualizarDatosUsuario(idUsuario, datos);
+    res.status(200).json(resultado);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al actualizar datos" });
+  }
+}
+
+// Actualizar foto de perfil
+export async function actualizarFotoPerfil(req, res) {
+  const { idUsuario } = req.params;
+  const { FotoPerfil } = req.body;
+  try {
+    const resultado = await servicioActualizarFotoPerfil(idUsuario, FotoPerfil);
+    res.status(200).json(resultado);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al actualizar foto de perfil" });
+  }
+}
+
+
 
 
 

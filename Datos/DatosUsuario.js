@@ -1,5 +1,6 @@
 import conexion from "../Config/db.js";
 
+//Registro
 export const crearUsuario = (usuario, callback) => {
   const sql = `CALL RegistrarUsuario(?, ?, ?, ?, ?)`;
   conexion.query(
@@ -9,6 +10,8 @@ export const crearUsuario = (usuario, callback) => {
   );
 };
 
+
+//El login
 export function buscarPorCorreo(correo, callback){
    const sql = `CALL LoginUsuario(?)`;
    conexion.query(sql, [correo], (err, resultado) => {
@@ -17,4 +20,34 @@ export function buscarPorCorreo(correo, callback){
     callback(null, usuario);
   });
 };
+
+
+// Obtener un usuario por ID
+export function ObtenerUsuario(idUsuario, callback) {
+  const sql = `CALL ObtenerUsuario(?)`;
+  conexion.query(sql, [idUsuario], (err, results) => {
+    if (err) return callback(err);
+    callback(null, results[0]);
+  });
+}
+
+// Actualizar datos generales del usuario
+export function ActualizarDatosUsuario(idUsuario, datos, callback) {
+  const sql = `
+    CALL ActualizarDatosUsuario(?,?,?,?,?)
+  `;
+  conexion.query(
+    sql,
+    [datos.Nombre,datos.Apellidos, datos.Telefono, datos.Correo, datos.Contrasena, idUsuario],
+    callback
+  );
+}
+
+// Actualizar la foto de perfil
+export function ActualizarFotoPerfil(idUsuario, urlFoto, callback) {
+  const sql = `
+    CALL ActualizarFotoPerfil(?,?)
+  `;
+  conexion.query(sql, [idUsuario,urlFoto], callback);
+}
 

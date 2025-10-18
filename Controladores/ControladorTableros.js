@@ -1,4 +1,4 @@
-import { servicioCrearTablero, servicioListarTableros, servicioGuardarImagenEnTablero } from "../Servicios/ServicioTableros.js";
+import { servicioCrearTablero, servicioListarTableros, servicioGuardarImagenEnTablero, servicioListarImagenesTablero } from "../Servicios/ServicioTableros.js";
 
 export async function crearTableroController(req, res) {
   try {
@@ -38,3 +38,14 @@ export async function guardarImagenController(req, res) {
     res.status(500).json({ error: "Error al guardar imagen en tablero" });
   }
 }
+
+export const obtenerImagenesTablero = async (req, res) => {
+    try {
+        const idTablero = req.params.idTablero;
+        const imagenes = await servicioListarImagenesTablero(idTablero);
+        res.status(200).json(imagenes);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Error al obtener las imágenes del tablero" });
+    }
+};

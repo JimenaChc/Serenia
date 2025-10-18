@@ -15,3 +15,8 @@ export const guardarImagenEnTablero = (idTablero, idImagen, callback) => {
  const sql = `CALL AgregarImagenTablero(?,?)`;
   conexion.query(sql, [idTablero, idImagen], callback);
 };
+
+export const obtenerImagenesPorTablero = (idTablero, callback) => {
+    const sql = `CALL ImagenesTableros(?)`;
+    conexion.query(sql, [idTablero], callback);
+};

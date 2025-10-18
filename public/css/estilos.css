@@ -134,7 +134,7 @@ body {
 .overlay {
   background-color: rgba(0, 0, 0, 0.4);
   width: 100%;
-  height: 100%;
+  height: 120%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -163,8 +163,9 @@ body {
   background-color: #52734d;
   color: #fff;
   border-radius: 15px;
-  padding: 22px;
+  padding: 32px;
   font-weight: 300;
+  font-size: 1.5rem;
   text-decoration: none;
   transition: background 0.3s;
 }
@@ -336,6 +337,766 @@ body {
   bottom: 100px;
 }
 
+/*tableros*/
+.tablero-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.tablero-card:hover {
+    transform: scale(1.05);
+}
+
+#contenedorImagenesTablero img {
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin: 2px 2px;
+
+}
+#contenedorImagenesTablero img:hover {
+    transform: scale(1.05);
+}
+
+    #contenedorTablerosGrid {
+      column-count: 2;
+      column-gap: 0.5rem;
+    }
+    .tablero-card {
+      display: inline-block;
+      width: 100%;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .tablero-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+    .tablero-preview {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .tablero-preview img {
+      width: 50%;
+      object-fit: cover;
+      height: 80px;
+      padding: 1px;
+    }
+    .tablero-info {
+      padding: 0.5rem;
+    }
+    .tablero-info h5 {
+      margin: 0;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Masonry grid para imágenes dentro del tablero */
+    #contenedorImagenesTablero {
+      column-count: 2;
+      column-gap: 0.5rem;
+    }
+    #contenedorImagenesTablero img {
+      width: 100%;
+      margin-bottom: 0.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    #contenedorImagenesTablero img:hover {
+      transform: scale(1.03);
+    }
+
+    #pantallaImagenesTablero {
+      padding-top: 1rem;
+    }
+
+    #btnVolverTableros {
+      margin-bottom: 1rem;
+    }
+/* ===== Diseño general del mockup ===== */
+body.mockup-page {
+  background: linear-gradient(180deg, #f5f2ef 0%, #e5ece4 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 0 5rem; /* deja espacio al menú inferior */
+}
+
+.titulo-principal {
+  font-family: 'Playfair Display', serif;
+  color: #355c47;
+  font-size: 2.2rem;
+  margin-bottom: 1.2rem;
+  text-align: center;
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ===== Carruseles en columna ===== */
+.category-carousel {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 0 auto 2rem;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.category-carousel img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  transition: transform 0.6s ease, filter 0.6s ease;
+  filter: brightness(0.75);
+}
+
+.category-carousel img:hover {
+  transform: scale(1.05);
+  filter: brightness(0.9);
+}
+
+/* Texto del carrusel */
+.category-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 1.7rem;
+  font-weight: 600;
+  font-family: 'Playfair Display', serif;
+  text-shadow: 0px 3px 8px rgba(0,0,0,0.5);
+}
+
+/* Indicadores */
+.carousel-indicators {
+  bottom: 8px;
+}
+
+.carousel-indicators [data-bs-target] {
+  background-color: #d9e2d2;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin: 0 4px;
+  opacity: 0.8;
+}
+
+.carousel-indicators .active {
+  background-color: #52734d;
+  opacity: 1;
+}
+
+/* ===== Responsividad ===== */
+@media (max-width: 480px) {
+  .titulo-principal {
+    font-size: 1.9rem;
+  }
+
+  .category-carousel img {
+    height: 180px;
+  }
+
+  .category-text {
+    font-size: 1.4rem;
+  }
+}
+
+/* ===== Animación sutil al entrar ===== */
+.category-carousel {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+.category-carousel:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.category-carousel:nth-child(3) {
+  animation-delay: 0.4s;
+}
+.category-carousel:nth-child(4) {
+  animation-delay: 0.6s;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* ===== Formulario de Proyecto ===== */
+.formulario-container {
+  background: #fff;
+  width: 90%;
+  max-width: 420px;
+  margin: 2rem auto;
+  padding: 2rem 1.5rem;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.formulario-titulo {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #355c47;
+  margin-bottom: 1.5rem;
+  text-align: left;
+  width: 100%;
+}
+
+/* Campos de texto */
+.form-input {
+  width: 100%;
+  border: none;
+  background: #f2f1ef;
+  border-radius: 20px;
+  padding: 14px 16px;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  outline: none;
+  transition: box-shadow 0.3s ease;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.form-input:focus {
+  background: #fff;
+  box-shadow: 0 0 6px #9ac48a;
+}
+
+.area {
+  min-height: 90px;
+  resize: none;
+}
+
+/* Subir foto */
+.foto-upload {
+  width: 100%;
+  background: #f2f1ef;
+  border-radius: 20px;
+  text-align: center;
+  padding: 18px 10px;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.foto-upload:hover {
+  background: #eae9e7;
+}
+
+.foto-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #888;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.foto-label i {
+  font-size: 1.6rem;
+  margin-bottom: 6px;
+  color: #6fa87d;
+}
+
+.foto-label span {
+  font-size: 0.8rem;
+}
+
+/* Botones */
+.btn-hecho {
+  width: 100%;
+  border: none;
+  border-radius: 20px;
+  background-color: #52734d;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 14px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-bottom: 0.8rem;
+}
+
+.btn-hecho:hover {
+  background-color: #6fa87d;
+}
+
+.btn-cancelar {
+  background: none;
+  border: none;
+  color: #355c47;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.btn-cancelar:hover {
+  color: #6fa87d;
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .formulario-container {
+    padding: 1.5rem 1rem;
+  }
+  .formulario-titulo {
+    font-size: 1.7rem;
+  }
+}
+/* ===== Pantalla de Perfil ===== */
+.perfil-container {
+  width: 90%;
+  max-width: 420px;
+  margin: 2rem auto 5rem;
+  background: #fff;
+  border-radius: 25px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.perfil-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.perfil-titulo {
+  font-family: 'Playfair Display', serif;
+  color: #355c47;
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.icon-config {
+  font-size: 1.6rem;
+  color: #52734d;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.icon-config:hover {
+  color: #6fa87d;
+}
+
+.perfil-subtitulo {
+  color: #555;
+  font-size: 0.95rem;
+  margin: 10px 0 20px;
+}
+
+/* Foto de perfil */
+.perfil-foto {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 1.5rem;
+}
+
+.perfil-foto img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e6e6e6;
+}
+
+.editar-foto {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: #52734d;
+  border-radius: 50%;
+  padding: 6px;
+  color: white;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 2px solid #fff;
+  transition: background 0.3s ease;
+}
+
+.editar-foto:hover {
+  background-color: #6fa87d;
+}
+
+/* Formulario */
+.perfil-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.perfil-formulario .form-input {
+  width: 100%;
+  background: #f2f1ef;
+  border: none;
+  border-radius: 15px;
+  padding: 12px 15px;
+  font-size: 0.95rem;
+  outline: none;
+  font-family: 'Quicksand', sans-serif;
+  transition: box-shadow 0.3s ease;
+}
+
+.perfil-formulario .form-input:focus {
+  background: #fff;
+  box-shadow: 0 0 6px #9ac48a;
+}
+
+.perfil-formulario .btn-hecho {
+  width: 100%;
+  background-color: #52734d;
+  border: none;
+  border-radius: 15px;
+  padding: 12px;
+  font-weight: 600;
+  color: #fff;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+}
+
+.perfil-formulario .btn-hecho:hover {
+  background-color: #6fa87d;
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .perfil-container {
+    padding: 1.5rem 1rem;
+  }
+  .perfil-titulo {
+    font-size: 1.6rem;
+  }
+  .perfil-foto {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* Pantalla de ajustes */
+.ajustes-container {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Título principal */
+.titulo-ajustes {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #355c47;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+/* Subtítulos de sección */
+.ajuste-subtitulo {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #355c47;
+  margin: 1.5rem 0 0.7rem;
+}
+
+/* Bloque de ajustes */
+.ajuste-seccion {
+  background: #f9f9f9;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Elementos individuales */
+.ajuste-item {
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid #ccc;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #333;
+  background: #f9f9f9;
+}
+
+.ajuste-item:last-child {
+  border-bottom: none;
+}
+
+/* Pequeña versión */
+.small-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.small-item small {
+  color: #777;
+  font-size: 0.8rem;
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .titulo-ajustes {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .ajuste-item {
+    font-size: 0.95rem;
+    padding: 0.8rem 1rem;
+  }
+
+  .ajuste-seccion {
+    border-radius: 12px;
+  }
+}
+/* ===== Encabezado superior tipo perfil ===== */
+.top-header {
+  width: 100%;
+  max-width: 400px;
+  margin: 30px auto;
+  background: transparent;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 900;
+}
+
+/* Imagen de perfil */
+.perfil-mini {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Botón My Activity */
+.btn-actividad {
+  background-color: #0066ff;
+  color: #fff;
+  font-weight: 500;
+  border: none;
+  border-radius: 25px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+.btn-actividad:hover {
+  background-color: #0052cc;
+}
+
+/* Ajuste para que el contenido no quede oculto por el header fijo */
+#pantallaTableros,
+#pantallaImagenesTablero {
+  margin-top: 70px;
+}
 
 
+/*Formulario cotización*/
+    .formulario-container {
+      max-width: 400px;
+      margin: 30px auto 100px;
+      padding: 20px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
 
+    .formulario-titulo {
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .form-input {
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .area {
+      resize: none;
+      height: 80px;
+    }
+
+    .foto-upload {
+      border: 2px dashed #ccc;
+      border-radius: 12px;
+      text-align: center;
+      padding: 20px;
+      margin-bottom: 15px;
+      transition: all 0.3s;
+    }
+
+    .foto-upload:hover {
+      border-color: #9a66ff;
+      background-color: #faf8ff;
+    }
+
+    .foto-label {
+      display: block;
+      color: #666;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .foto-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      justify-content: center;
+    }
+
+    .foto-preview img {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .btn-hecho {
+      width: 100%;
+      background-color: #9a66ff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      font-weight: 500;
+    }
+
+    .btn-cancelar {
+      width: 100%;
+      background-color: #ddd;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 8px;
+      color: #555;
+      font-weight: 500;
+    }
+
+    .center-btn i {
+      font-size: 30px;
+      color: #9a66ff;
+    }
+
+/* ===== Encabezado de Cotizaciones ===== */
+.header-cotizaciones {
+  color: #000000;
+  text-align: center;
+  padding: 1rem 0;
+  border-radius: 0 0 20px 20px;
+  font-family: 'Quicksand', sans-serif;
+  top: 0;
+  z-index: 100;
+}
+
+.header-cotizaciones h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+/* ===== Contenedor de cotizaciones ===== */
+.contenedor-cotizaciones {
+  max-width: 420px;
+  margin: 100px auto 90px;
+  padding: 0 1rem;
+}
+
+/* ===== Lista y tarjetas ===== */
+.lista-cotizaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.cotizacion-card {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.cotizacion-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
+
+/* Galería interna */
+.cotizacion-imagenes {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  border-bottom: 1px solid #eee;
+}
+
+.cotizacion-imagenes img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  flex-shrink: 0;
+  scroll-snap-align: center;
+  border-right: 2px solid #fff;
+}
+
+/* Información */
+.cotizacion-info {
+  padding: 1rem;
+}
+
+.cotizacion-info h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+  color: #355c47;
+}
+
+.cotizacion-info p {
+  margin: 0.2rem 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.cotizacion-estado {
+  font-weight: 600;
+  color: #52734d;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.sin-cotizaciones {
+  text-align: center;
+  color: #777;
+  margin-top: 2rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .header-cotizaciones h1 {
+    font-size: 1.5rem;
+  }
+
+  .cotizacion-imagenes img {
+    height: 150px;
+  }
+
+  .contenedor-cotizaciones {
+    margin: 50px auto 90px;
+  }
+}

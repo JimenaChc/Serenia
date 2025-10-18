@@ -1,20 +1,24 @@
+
 import express from "express";
-import bodyParser from "body-parser";
 import cors from "cors";
-import { registrar,login } from "./Controladores/ControladorUsuario.js";
 import RutaImagenes from "./Rutas/RutaImagenes.js";
 import RutaTableros from "./Rutas/RutaTableros.js";
+import RutaCotizaciones from "./Rutas/RutaCotizaciones.js";
+import RutaUsuarios from "./Rutas/RutaUsuarios.js";
 
 const app = express();
 
 app.use(cors());
-app.use(bodyParser.json());
 app.use(express.static("Public")); 
+
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use("/api/usuarios", RutaUsuarios);
 app.use("/api/imagenes",RutaImagenes);
 app.use("/api/tableros", RutaTableros);
-// Ruta para registrar usuario
-app.post("/api/usuarios/registro", registrar);
-app.post("/api/usuarios/login",login);
+app.use("/api/cotizaciones", RutaCotizaciones);
+app.use("/api/proyectos", RutaCotizaciones);
+
 
 const PORT = 3000;
 app.listen(PORT, () => {

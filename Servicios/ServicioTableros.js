@@ -1,4 +1,4 @@
-import { crearTablero, listarTablerosPorUsuario, guardarImagenEnTablero } from "../Datos/DatosTableros.js";
+import { crearTablero, listarTablerosPorUsuario, guardarImagenEnTablero,obtenerImagenesPorTablero } from "../Datos/DatosTableros.js";
 
 export const servicioCrearTablero = (nombre, idUsuario) => {
   return new Promise((resolve, reject) => {
@@ -25,4 +25,13 @@ export const servicioGuardarImagenEnTablero = (idTablero, idImagen) => {
       else resolve(resultado);
     });
   });
+};
+
+export const servicioListarImagenesTablero = (idTablero) => {
+    return new Promise((resolve, reject) => {
+        obtenerImagenesPorTablero(idTablero, (err, resultados) => {
+            if(err) reject(err);
+            else resolve(resultados[0]);
+        });
+    });
 };

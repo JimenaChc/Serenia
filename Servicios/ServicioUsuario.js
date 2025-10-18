@@ -1,5 +1,5 @@
 import conexion from "../Config/db.js";
-import { buscarPorCorreo } from "../Datos/DatosUsuario.js";
+import { buscarPorCorreo,ObtenerUsuario,ActualizarDatosUsuario,ActualizarFotoPerfil } from "../Datos/DatosUsuario.js";
 import bcrypt from "bcryptjs";
 
 export async function registrarUsuario(nombre, apellidos, correo, contrasena, telefono) {
@@ -30,7 +30,32 @@ export async function loginUsuario(correo, contrasena) {
   });
 }
 
+// Obtener usuario por ID
+export function servicioObtenerUsuario(idUsuario) {
+  return new Promise((resolve, reject) => {
+    ObtenerUsuario(idUsuario, (err, usuario) => {
+      if (err) return reject(err);
+      resolve(usuario);
+    });
+  });
+}
 
+// Actualizar datos generales
+export function servicioActualizarDatosUsuario(idUsuario, datos) {
+  return new Promise((resolve, reject) => {
+    ActualizarDatosUsuario(idUsuario, datos, (err) => {
+      if (err) return reject(err);
+      resolve({ mensaje: "Datos actualizados correctamente" });
+    });
+  });
+}
 
-
-
+// Actualizar foto de perfil
+export function servicioActualizarFotoPerfil(idUsuario, FotoPerfil) {
+  return new Promise((resolve, reject) => {
+    ActualizarFotoPerfil(idUsuario, FotoPerfil, (err) => {
+      if (err) return reject(err);
+      resolve({ mensaje: "Foto de perfil actualizada correctamente" });
+    });
+  });
+}

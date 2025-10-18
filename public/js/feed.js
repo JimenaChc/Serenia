@@ -64,7 +64,8 @@ function inicializarEventosModal() {
     document.getElementById("modalImg").src = imagen.src;
     document.getElementById("modalTitulo").textContent = imagen.alt;
     document.getElementById("modalDescripcion").textContent = imagen.title;
-    document.getElementById("btnLike").setAttribute("data-id", idImagenSeleccionada);
+    const btnLike = document.getElementById("btnLike");
+    btnLike.setAttribute("data-id", idImagenSeleccionada);
     document.getElementById("btnGuardar").setAttribute("data-id", idImagenSeleccionada);
 
     modalImagen.show();
@@ -73,14 +74,24 @@ function inicializarEventosModal() {
 
 // Me gusta
 async function manejarLike(idImagen) {
+  if (!idImagen) {
+    mostrarMensaje("No se pudo identificar la imagen");
+    return;
+  }
   try {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const idUsuario = usuario?.Id_Usuario;
+  if (!idUsuario) {
+      mostrarMensaje("Usuario no identificado");
+      return;
+    }
     const response = await fetch("/api/imagenes/like", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idImagen })
+      body: JSON.stringify({ idUsuario,idImagen })
     });
     const data = await response.json();
-    mostrarMensaje(data.mensaje || "Imagen marcada con 'Me gusta'");
+    mostrarMensaje(data.mensaje || "Me gusta!");
   } catch (err) {
     console.error(err);
     mostrarMensaje("Error al registrar el 'Me gusta'");
@@ -189,8 +200,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnRegresar").addEventListener("click", () => modalImagen.hide());
 
   document.getElementById("btnLike").addEventListener("click", (e) => {
-    const id = e.target.getAttribute("data-id");
-    manejarLike(id);
+    const idImagen = e.currentTarget.getAttribute("data-id");
+    manejarLike(idImagen);
   });
 
   document.getElementById("btnGuardar").addEventListener("click", (e) => {
