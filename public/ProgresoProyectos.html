@@ -1,162 +1,447 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Progreso del Proyecto</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="./css/estilos.css">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link href="./css/estilos.css" rel="stylesheet">
+
   <style>
-    .progress-container {
-      display: flex;
-      justify-content: space-between;
-      position: relative;
-      margin: 30px 0;
-    }
-
-    .progress-container::before {
-      content: "";
-      background: #ddd;
-      position: absolute;
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%);
-      height: 4px;
-      width: 100%;
-      z-index: 1;
-    }
-
-    .progress-step {
-      background: #fff;
-      border: 2px solid #ddd;
-      color: #888;
-      border-radius: 50%;
-      height: 40px;
-      width: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2;
-      transition: 0.3s;
-    }
-
-    .progress-step.active {
-      border-color: #4CAF50;
-      color: #4CAF50;
-      font-weight: bold;
-    }
-
-    .galeria {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .galeria img {
-      width: 100%;
-      border-radius: 10px;
-      object-fit: cover;
-    }
-
-    .mensaje-sin-imagenes {
-      text-align: center;
-      color: #555;
-      margin-top: 20px;
-      font-style: italic;
-    }
+    body { background-color: #f5f8f9; font-family: 'Poppins', sans-serif; color: #333; margin:0; padding:0; padding-bottom:80px;}
+    .container-fluid {padding:0; min-height:auto; display:flex; flex-direction:column; background:#fff; flex:1;}
+    .header {background: linear-gradient(90deg, #a6c0fe, #f68084); color:white; padding:1.5rem; text-align:center;}
+    .header h5 {margin-bottom:0.3rem; font-size:1.3rem; font-weight:600;}
+    .progress {height:10px; border-radius:10px; background-color:#e9ecef; margin-top:10px;}
+    .progress-bar {background:linear-gradient(90deg, #f68084, #a6c0fe); border-radius:10px;}
+    .section {padding:1.5rem; flex-grow:1; overflow-y:auto;}
+    label {font-weight:600; font-size:0.9rem;}
+    textarea, select, input {border-radius:10px !important; font-size:0.9rem;}
+    .btn {border-radius:12px; padding:0.8rem; width:100%; font-weight:bold;}
+    .policy {font-size:0.8rem; color:#666; margin-top:8px; text-align:justify;}
+    .imagenes {display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:10px; margin-top:15px;}
+    .imagenes img {width:100%; height:120px; object-fit:cover; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+    @media (min-width: 768px) {.container-fluid {max-width:480px; margin:auto; border-radius:20px; box-shadow:0 4px 10px rgba(0,0,0,0.1);}}
+    .modal-bottom-sheet .modal-content {border-radius:20px 20px 0 0; box-shadow:0 -4px 12px rgba(0,0,0,0.2);}
+    .modal-bottom-sheet .modal-dialog {margin:0; position:fixed; bottom:0; left:0; right:0;}
   </style>
 </head>
-<body class="mockup-page">
 
-  <header class="header-cotizaciones">
-    <h1>Progreso del Proyecto</h1>
-    <a href="./Cotizaciones.html"><i class="btn btn-light mb-2">← Volver</i></a>
-  </header>
-
-  <main class="container py-4">
-
-    <div id="barraProgreso" class="progress-container">
-      <div class="progress-step" id="step1">1</div>
-      <div class="progress-step" id="step2">2</div>
-      <div class="progress-step" id="step3">3</div>
-      <div class="progress-step" id="step4">4</div>
+<body>
+  <div class="container-fluid">
+    <div class="header">
+      <h5 id="NombreProyecto">Proyecto en progreso</h5>
+      <div class="progress mt-3">
+        <div class="progress-bar" id="barraProgreso" role="progressbar" style="width: 40%;"></div>
+      </div>
+      <p class="mt-2 mb-0" id="Estado">Aprobada</p>
     </div>
 
-    <h5 id="estadoActual" class="text-center mt-3"></h5>
+    <div class="section" id="mainSection">
+      <!-- Aquí se renderiza dinámicamente el contenido según estado -->
+    </div>
+  </div>
 
-    <div id="imagenesProgreso" class="galeria mt-4"></div>
-    <p id="mensajeSinImagenes" class="mensaje-sin-imagenes" style="display:none;">No hay imágenes para esta cotización</p>
-
-  </main>
-
+  <!-- Modal de pago -->
+  <div class="modal fade" id="modalPago" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-bottom-sheet">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title">Realizar pago del 50%</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formPago">
+            <div class="mb-2">
+              <label class="form-label">Número de tarjeta</label>
+              <input type="text" class="form-control" name="numeroTarjeta" maxlength="16" placeholder="**** **** **** ****" required>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Nombre del titular</label>
+              <input type="text" class="form-control" name="nombreTitular" required>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-2">
+                <label class="form-label">Vencimiento</label>
+                <input type="text" class="form-control" name="vencimiento" placeholder="MM/AA" maxlength="5" required>
+              </div>
+              <div class="col-6 mb-2">
+                <label class="form-label">CVV</label>
+                <input type="password" class="form-control" name="cvv" maxlength="4" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Monto a pagar</label>
+              <input type="number" class="form-control" name="Monto" id="montoPago" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Realizar pago</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Menú inferior -->
   <nav class="bottom-nav">
-    <a href="./feed.html" class="nav-item"><i class="bi bi-house-door"></i></a>
+    <a href="./feed.html" class="nav-item active"><i class="bi bi-house-door"></i></a>
     <a href="./Likes.html" class="nav-item"><i class="bi bi-suit-heart"></i></a>
     <a href="./IniciarProyecto.html" class="nav-item center-btn"><i class="bi bi-plus-circle"></i></a>
     <a href="./Cotizaciones.html" class="nav-item"><i class="bi bi-box"></i></a>
     <a href="./Tableros.html" class="nav-item"><i class="bi bi-person"></i></a>
   </nav>
+  <!-- Toast (mensaje flotante) -->
+  <div class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index: 1100">
+    <div id="toastPago" class="toast align-items-center text-white bg-success border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body" id="mensajeToast">Pago realizado con éxito</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    async function cargarProgreso() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const idCotizacion = urlParams.get("id");
-      if (!idCotizacion) {
-        document.getElementById("estadoActual").textContent = "Cotización no identificada";
-        return;
-      }
+    const params = new URLSearchParams(window.location.search);
+    const idCotizacion = params.get("id");
 
+    const modalPago = new bootstrap.Modal(document.getElementById("modalPago"));
+    const toastEl = document.getElementById("toastPago");
+    const toast = new bootstrap.Toast(toastEl);
+    const mainSection = document.getElementById("mainSection");
+
+    async function cargarDetalle() {
       try {
-        const res = await fetch(`/api/cotizaciones/${idCotizacion}`);
-        if (!res.ok) {
-          console.error("Error al obtener cotización:", res.status);
-          document.getElementById("estadoActual").textContent = "No se pudo cargar la cotización";
-          return;
-        }
-
+        const res = await fetch(`http://localhost:3000/api/cotizaciones/detalle/${idCotizacion}`);
         const data = await res.json();
-        console.log("Respuesta del servidor:", data);
+        const detalle = data[0];
 
-        const progreso = data[0]; //Tomamos el primer elemento
-        if (!progreso) {
-          document.getElementById("estadoActual").textContent = "Tu cotización aún esta siendo revisada";
-          return;
+        document.getElementById("NombreProyecto").textContent = detalle.NombreProyecto || "Proyecto sin nombre";
+        document.getElementById("Estado").textContent = detalle.Estado || "Aprobada";
+
+        const progreso = detalle.Estado === "Aprobada" ? 40 :
+                         detalle.Estado === "En desarrollo" ? 70 :
+                         detalle.Estado === "Terminada" ? 100 : 10;
+        document.getElementById("barraProgreso").style.width = progreso + "%";
+
+        if(detalle.Estado === "Aprobada") {
+          mostrarSeccionPago(detalle);
+        } else if(detalle.Estado === "En desarrollo") {
+          mostrarSeccionDesarrollo(detalle);
+        } else if(detalle.Estado === "Terminada") {
+          mostrarSeccionFinalizada(detalle); 
         }
-
-        // Mostrar estado actual
-        document.getElementById("estadoActual").textContent = progreso.estado;
-
-        //Actualizar barra de progreso
-        const estados = ["En revisión", "Aprobada", "En desarrollo", "Finalizada"];
-        const stepIndex = estados.indexOf(progreso.estado) + 1;
-        for (let i = 1; i <= stepIndex; i++) {
-          document.getElementById(`step${i}`).classList.add("active");
-        }
-
-        //Mostrar imágenes
-        const contenedor = document.getElementById("imagenesProgreso");
-        const mensajeSinImagenes = document.getElementById("mensajeSinImagenes");
-        contenedor.innerHTML = ""; // Limpiar
-        if (progreso.Imagenes) {
-          const imagenes = progreso.Imagenes.split(",");
-          imagenes.forEach(url => {
-            const img = document.createElement("img");
-            img.src = url.trim();
-            contenedor.appendChild(img);
-          });
-        } else {
-          mensajeSinImagenes.style.display = "block";
-        }
-
-      } catch (error) {
-        console.error("Error al cargar progreso:", error);
-        document.getElementById("estadoActual").textContent = "Error al cargar cotización";
+      } catch(err) {
+        console.error("Error al cargar detalle:", err);
       }
     }
 
-    document.addEventListener("DOMContentLoaded", cargarProgreso);
+    function mostrarSeccionPago(detalle) {
+      mainSection.innerHTML = `
+        <p><strong>Espacio:</strong> ${detalle.Espacio || "No especificado"}</p>
+        <p><strong>Servicio:</strong> ${detalle.Servicio || "No especificado"}</p>
+        <p><strong>Descripción:</strong> ${detalle.Descripcion || "Sin descripción"}</p>
+
+        <div id="imagenesContainer" class="imagenes">
+          ${detalle.Imagenes ? detalle.Imagenes.split(",").map(url => `<img src="${url.trim()}">`).join("") : ""}
+        </div>
+
+        <hr>
+
+        <h6>Detalles de diseño</h6>
+        <form id="formDisenio">
+          <div class="mb-3">
+            <label>Estilo deseado</label>
+            <textarea class="form-control" name="EstiloDeseado" rows="2" placeholder="Describe el estilo que deseas...">${detalle.EstiloDeseado || ""}</textarea>
+          </div>
+          <div class="mb-3">
+            <label>Materiales deseados</label>
+            <textarea class="form-control" name="MaterialesDeseados" rows="2" placeholder="Ejemplo: madera, mármol, vidrio...">${detalle.MaterialesDeseados || ""}</textarea>
+          </div>
+          <div class="mb-3">
+            <label>Tablero de inspiración</label>
+            <select class="form-select" name="Id_Tablero">
+              <option value="1" ${detalle.Id_Tablero == 1 ? "selected":""}>Tablero Serenidad</option>
+              <option value="2" ${detalle.Id_Tablero == 2 ? "selected":""}>Tablero Naturaleza</option>
+              <option value="3" ${detalle.Id_Tablero == 3 ? "selected":""}>Tablero Minimalista</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-outline-primary">Guardar detalles</button>
+        </form>
+
+        <hr>
+
+        <h6>Pago inicial (50%)</h6>
+        <p class="policy">
+          Para continuar con el desarrollo, se requiere un pago inicial del 50% del monto total del proyecto. 
+          El resto se cancelará al finalizar el diseño. Este pago no es reembolsable.
+        </p>
+
+        <button class="btn btn-primary mt-2" id="btnPagar">Realizar pago del 50%</button>
+      `;
+
+      // Reasignar eventos
+      document.getElementById("btnPagar").addEventListener("click", ()=> modalPago.show());
+      document.getElementById("formDisenio").addEventListener("submit", guardarDetallesDisenio);
+      document.getElementById("formPago")?.addEventListener("submit", enviarPago);
+    }
+
+function mostrarSeccionDesarrollo(detalle) {
+  mainSection.innerHTML = `
+    <p><strong>Espacio:</strong> ${detalle.Espacio || "No especificado"}</p>
+    <p><strong>Servicio:</strong> ${detalle.Servicio || "No especificado"}</p>
+
+    <h6>Materiales a utilizar</h6>
+    <ul id="listaMateriales" class="mb-3"></ul>
+
+    <h6>Galería de progreso</h6>
+    <div id="galeriaProgreso" class="row g-2"></div>
+
+    <hr>
+<h6>Comentarios</h6>
+<div id="comentariosContainer" class="mb-3" style="max-height:250px; overflow-y:auto; border:1px solid #ccc; padding:10px; border-radius:10px; background:#f9f9f9;"></div>
+
+<form id="formComentario" class="d-flex gap-2">
+  <input type="text" class="form-control" placeholder="Escribe un comentario..." required />
+  <button type="submit" class="btn btn-primary">Enviar</button>
+</form>
+
+
+    <!-- Modal para imagen grande -->
+    <div class="modal fade" id="modalImagenGrande" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" id="tituloImagenModal"></h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-center">
+            <img id="imagenModal" src="" style="width:100%; border-radius:12px;">
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Mostrar materiales
+  const lista = document.getElementById("listaMateriales");
+  if (detalle.MaterialesDeseados) {
+    detalle.MaterialesDeseados.split(",").forEach(mat => {
+      const li = document.createElement("li");
+      li.textContent = mat.trim();
+      lista.appendChild(li);
+    });
+  }
+
+  // Cargar imágenes de progreso desde la API
+  fetch(`http://localhost:3000/api/cotizaciones/imagenesProgreso/${detalle.Id_Cotizacion}`)
+    .then(res => res.json())
+    .then(imagenes => {
+      const galeria = document.getElementById("galeriaProgreso");
+      imagenes.forEach(img => {
+        const col = document.createElement("div");
+        col.className = "col-4"; // 3 imágenes por fila
+        const imagen = document.createElement("img");
+        imagen.src = img.url;
+        imagen.alt = img.descripcion || "";
+        imagen.style.cursor = "pointer";
+        imagen.style.width = "100%";
+        imagen.style.borderRadius = "10px";
+        imagen.addEventListener("click", () => {
+          document.getElementById("imagenModal").src = img.url;
+          document.getElementById("tituloImagenModal").textContent = img.descripcion || "";
+          const modal = new bootstrap.Modal(document.getElementById("modalImagenGrande"));
+          modal.show();
+        });
+        col.appendChild(imagen);
+        galeria.appendChild(col);
+      });
+    })
+    .catch(err => console.error("Error al cargar imágenes de progreso:", err));
+}
+
+function mostrarSeccionFinalizada(detalle) {
+  mainSection.innerHTML = `
+    <p><strong>Espacio:</strong> ${detalle.Espacio || "No especificado"}</p>
+    <p><strong>Servicio:</strong> ${detalle.Servicio || "No especificado"}</p>
+    <p><strong>Descripción:</strong> ${detalle.Descripcion || "Sin descripción"}</p>
+
+    <h6>Materiales utilizados</h6>
+    <ul id="listaMaterialesFinalizados" class="mb-3"></ul>
+
+    <h6>Galería final del proyecto</h6>
+    <div id="galeriaFinal" class="row g-2"></div>
+
+    <!-- Modal para imagen grande -->
+    <div class="modal fade" id="modalImagenGrande" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" id="tituloImagenModal"></h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-center">
+            <img id="imagenModal" src="" style="width:100%; border-radius:12px;">
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Mostrar materiales
+  const lista = document.getElementById("listaMaterialesFinalizados");
+  if (detalle.MaterialesDeseados) {
+    detalle.MaterialesDeseados.split(",").forEach(mat => {
+      const li = document.createElement("li");
+      li.textContent = mat.trim();
+      lista.appendChild(li);
+    });
+  }
+
+  // Cargar imágenes finales
+  fetch(`http://localhost:3000/api/cotizaciones/imagenesProgreso/${detalle.Id_Cotizacion}`)
+    .then(res => res.json())
+    .then(imagenes => {
+      const galeria = document.getElementById("galeriaFinal");
+      imagenes.forEach(img => {
+        const col = document.createElement("div");
+        col.className = "col-4";
+        const imagen = document.createElement("img");
+        imagen.src = img.url;
+        imagen.alt = img.descripcion || "";
+        imagen.style.cursor = "pointer";
+        imagen.style.width = "100%";
+        imagen.style.borderRadius = "10px";
+        imagen.addEventListener("click", () => {
+          document.getElementById("imagenModal").src = img.url;
+          document.getElementById("tituloImagenModal").textContent = img.descripcion || "";
+          const modal = new bootstrap.Modal(document.getElementById("modalImagenGrande"));
+          modal.show();
+        });
+        col.appendChild(imagen);
+        galeria.appendChild(col);
+      });
+    })
+    .catch(err => console.error("Error al cargar imágenes finales:", err));
+}
+
+    // Funciones de envío
+    async function enviarPago(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const datos = Object.fromEntries(formData.entries());
+      datos.Id_Cotizacion = idCotizacion;
+      datos.Monto = parseFloat(datos.Monto);
+
+      try {
+        const res = await fetch("http://localhost:3000/api/cotizaciones/pago", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(datos)
+        });
+        const data = await res.json();
+
+        document.getElementById("mensajeToast").textContent = data.mensaje || data.error || "Pago procesado";
+        toastEl.className = `toast align-items-center text-white ${res.ok ? "bg-success":"bg-danger"} border-0`;
+        toast.show();
+        modalPago.hide();
+
+        cargarDetalle(); // Actualiza la página al nuevo estado
+      } catch(err) {
+        document.getElementById("mensajeToast").textContent = "Error al conectar con el servidor";
+        toastEl.className = "toast align-items-center text-white bg-danger border-0";
+        toast.show();
+      }
+    }
+
+    async function guardarDetallesDisenio(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const datos = Object.fromEntries(formData.entries());
+      datos.Id_Cotizacion = idCotizacion;
+
+      try {
+        const res = await fetch("http://localhost:3000/api/cotizaciones/detallesDisenio", {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body: JSON.stringify(datos)
+        });
+        const data = await res.json();
+        document.getElementById("mensajeToast").textContent = data.mensaje || data.error || "Guardado";
+        toastEl.className = `toast align-items-center text-white ${res.ok ? "bg-success":"bg-danger"} border-0`;
+        toast.show();
+      } catch(err) {
+        document.getElementById("mensajeToast").textContent = "Error al conectar con el servidor";
+        toastEl.className = "toast align-items-center text-white bg-danger border-0";
+        toast.show();
+      }
+    }
+
+    // Inicial
+    cargarDetalle();
+    async function cargarComentarios() {
+  try {
+    const res = await fetch(`http://localhost:3000/api/cotizaciones/comentarios/${idCotizacion}`);
+    const comentarios = await res.json();
+
+    const cont = document.getElementById("comentariosContainer");
+    cont.innerHTML = ""; // limpiar antes de renderizar
+
+    comentarios.forEach(c => {
+      const div = document.createElement("div");
+      div.style.marginBottom = "8px";
+      div.style.padding = "6px 10px";
+      div.style.borderRadius = "12px";
+      div.style.maxWidth = "80%";
+      div.style.wordWrap = "break-word";
+
+      if(c.tipo === "usuario") {
+        div.style.background = "#d1e7dd";
+        div.style.alignSelf = "flex-start";
+      } else {
+        div.style.background = "#cfe2ff";
+        div.style.alignSelf = "flex-end";
+      }
+
+      div.textContent = `${c.emisor}: ${c.mensaje}`;
+      cont.appendChild(div);
+    });
+
+    // Mantener scroll al final
+    cont.scrollTop = cont.scrollHeight;
+  } catch(err) {
+    console.error("Error al cargar comentarios:", err);
+  }
+}
+
+// Evento para enviar comentario
+document.getElementById("formComentario")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const input = e.target.querySelector("input");
+  const mensaje = input.value.trim();
+  if(!mensaje) return;
+
+  try {
+    const res = await fetch("http://localhost:3000/api/cotizaciones/comentario", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ Id_Cotizacion: idCotizacion, mensaje, tipo: "usuario" }) // tipo "usuario" o "disenador"
+    });
+    const data = await res.json();
+    if(res.ok) {
+      input.value = "";
+      cargarComentarios(); // refrescar
+    }
+  } catch(err) {
+    console.error("Error al enviar comentario:", err);
+  }
+});
+
+// Llamar al cargar la sección
+cargarComentarios();
+
+
   </script>
 </body>
 </html>

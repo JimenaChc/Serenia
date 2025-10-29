@@ -1,4 +1,4 @@
-import { registrarUsuario, loginUsuario , servicioActualizarDatosUsuario,servicioActualizarFotoPerfil,servicioObtenerUsuario} from "../Servicios/ServicioUsuario.js";
+import { registrarUsuario, servicioObtenerGoogleClientID, loginORegistrarConGoogle, generarSecretoFA,validarCodigoFA, loginUsuario , servicioActualizarDatosUsuario,servicioActualizarFotoPerfil,servicioObtenerUsuario} from "../Servicios/ServicioUsuario.js";
 
 export async function registrar(req, res) {
   const { Nombre, Apellidos, Correo, Contrasena, Telefono } = req.body;
@@ -9,6 +9,23 @@ export async function registrar(req, res) {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al registrar usuario" });
+  }
+}
+
+export async function obtenerGoogleClientID(req, res) {
+  try {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+
+    if (!clientId) {
+      console.error("No se encontró GOOGLE_CLIENT_ID");
+      return res.status(500).json({ error: "GOOGLE_CLIENT_ID no configurado" });
+    }
+
+    console.log("Enviando GOOGLE_CLIENT_ID al cliente");
+    res.json({ clientId }); 
+  } catch (error) {
+    console.error("Error al obtener GOOGLE_CLIENT_ID:", error);
+    res.status(500).json({ error: "Error al obtener GOOGLE_CLIENT_ID" });
   }
 }
 
@@ -23,6 +40,21 @@ export async function login(req, res) {
     });
   } catch (error) {
     res.status(401).json({ error: error.toString() });
+  }
+}
+
+export async function googleAuth(req, res) {
+  const { token } = req.body;
+
+  try {
+    const { usuario, necesitaConfigurar2FA } = await loginORegistrarConGoogle(token);
+    res.status(200).json({
+      mensaje: "Autenticación exitosa con Google",
+      usuario,
+      necesitaConfigurar2FA
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
   }
 }
 
@@ -65,7 +97,34 @@ export async function actualizarFotoPerfil(req, res) {
   }
 }
 
+// Generar 2FA y enviar secreto al usuario
+export async function generarFAUsuario(req, res) {
+  const { idUsuario } = req.body;
+  try {
+   const result = await generarSecretoFA(idUsuario); // ahora devuelve {secret, otpauth_url}
+    res.json({
+      mensaje: "Secreto generado. Configura tu app Google Authenticator.",
+      secreto: result.secret,
+      otpauth_url: result.otpauth_url
+    });
+  } catch (error) {
+    console.error("Controlador -> generarFAUsuario error:", error);
+    res.status(500).json({ error: "Error al generar 2FA" });
+  }
+}
 
+// Verificar el código TOTP ingresado por el usuario
+export async function verificar2FA(req, res) {
+  const { idUsuario, codigo } = req.body;
+  try {
+    const esValido = await validarCodigoFA(idUsuario, codigo);
+    if (!esValido) return res.status(401).json({ error: "Código incorrecto" });
+    res.json({ mensaje: "2FA verificado correctamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al verificar 2FA" });
+  }
+}
 
 
 

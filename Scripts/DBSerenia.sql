@@ -62,7 +62,7 @@ Id_Servicio INT PRIMARY KEY AUTO_INCREMENT,
 Descripción VARCHAR(20),
 Estado BIT 
 );
-Select *from categorias
+
 CREATE TABLE Espacios_Eventos(
 Id_Espacio_Evento INT PRIMARY KEY AUTO_INCREMENT,
 Descripcion VARCHAR(20),
@@ -100,11 +100,45 @@ CREATE TABLE ProgresoCotizacion (
 
 CREATE TABLE ImagenesProgreso (
   Id_Imagen INT AUTO_INCREMENT PRIMARY KEY,
-  Id_Progreso INT NOT NULL,
+  Id_Cotizacion INT NOT NULL,
   url text,
   descripcion VARCHAR(255),
   fechaSubida DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (Id_Progreso) REFERENCES ProgresoCotizacion(Id_Progreso)
+  FOREIGN KEY (Id_Cotizacion) REFERENCES cotizaciones(Id_Cotizacion)
+);
+
+Select *from cotizaciones
+Select *from ImagenesProgreso
+ALTER TABLE ImagenesProgreso
+ADD CONSTRAINT fk_imagenes_progreso
+FOREIGN KEY (Id_Cotizacion) REFERENCES cotizaciones(Id_Cotizacion);
+
+
+CREATE TABLE DetallesDisenio(
+  Id_Detalle INT PRIMARY KEY AUTO_INCREMENT,
+  Id_Cotizacion INT NOT NULL,
+  EstiloDeseado VARCHAR(200),
+  MaterialesDeseados VARCHAR(300),
+  Id_Tablero INT NULL,
+  FOREIGN KEY (Id_Cotizacion) REFERENCES cotizaciones(Id_Cotizacion)
+);
+  
+CREATE TABLE pagosCotizaciones (
+  Id_Pago INT PRIMARY KEY AUTO_INCREMENT,
+  Id_Cotizacion INT NOT NULL,
+  Monto DECIMAL(10,2),
+  Estado ENUM('Pendiente','Completado') DEFAULT 'Pendiente',
+  FechaPago DATETIME DEFAULT NOW(),
+  FOREIGN KEY (Id_Cotizacion) REFERENCES cotizaciones(Id_Cotizacion)
+);
+
+CREATE TABLE Comentarios (
+Id_Comentario INT PRIMARY KEY AUTO_INCREMENT,
+Id_Cotizacion INT NOT NULL,
+Id_Usuario INT,
+Mensaje VARCHAR(255),
+Fecha DATETIME DEFAULT NOW(),
+FOREIGN KEY (Id_Cotizacion) REFERENCES cotizaciones(Id_Cotizacion) 
 );
 
 
@@ -374,7 +408,141 @@ INSERT INTO categorias (Nombre) Values ("Escenario")
 INSERT INTO categorias (Nombre) Values ("VideoClip")
 INSERT INTO categorias (Nombre) Values ("Set")
 
+ALTER TABLE Cotizaciones
+MODIFY COLUMN Estado ENUM('En revisión','Aprobada','En desarrollo','Rechazada','Terminada') DEFAULT 'En revisión';
 
+
+DELIMITER $$
+CREATE TRIGGER tr_actualizar_estado_cotizacion
+AFTER INSERT ON ProgresoCotizacion
+FOR EACH ROW
+BEGIN
+  UPDATE Cotizaciones
+  SET Estado = NEW.estado
+  WHERE Id_Cotizacion = NEW.Id_Cotizacion;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE ObtenerProgresoPorCotizacion(IN p_Id_Cotizacion INT)
+BEGIN
+  SELECT 
+    p.Id_Progreso,
+    p.estado,
+    p.descripcion,
+    p.montoActual,
+    p.fechaActualizacion,
+    GROUP_CONCAT(i.url) AS Imagenes
+  FROM ProgresoCotizacion p
+  LEFT JOIN ImagenesProgreso i ON p.Id_Progreso = i.Id_Progreso
+  WHERE p.Id_Cotizacion = p_Id_Cotizacion
+  GROUP BY p.Id_Progreso
+  ORDER BY p.fechaActualizacion ASC;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE guardarDetallesDisenio(
+  IN cId_Cotizacion INT,
+  IN cEstiloDeseado VARCHAR(200),
+  IN cMaterialesDeseados VARCHAR(300),
+  IN cId_Tablero INT
+)
+BEGIN 
+     INSERT INTO detallesdisenio (Id_Cotizacion, EstiloDeseado, MaterialesDeseados, Id_Tablero)
+    VALUES (cId_Cotizacion, cEstiloDeseado, cMaterialesDeseados, cId_Tablero);
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE registrarPago(
+  IN cId_Cotizacion INT,
+  IN cMonto DECIMAL(10,2),
+  IN cEstado Varchar(10)
+)
+BEGIN 
+         INSERT INTO pagosCotizaciones (Id_Cotizacion, Monto, Estado)
+         VALUES (cId_Cotizacion,cMonto,cEstado);
+
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE ObtenerCotizacion(IN pId_Cotizacion INT)
+BEGIN
+  SELECT 
+      c.Id_Cotizacion,
+      c.NombreProyecto,
+      c.Descripcion,
+      c.MontoEstimado,
+      c.Estado,
+      s.Descripcion AS Servicio,
+      e.Nombre AS Espacio,
+      GROUP_CONCAT(i.UrlImagen) AS Imagenes
+    FROM Cotizaciones c
+    LEFT JOIN Servicios s ON c.Id_Servicio = s.Id_Servicio
+    LEFT JOIN categorias k ON c.Id_Categoria = k.Id_Categoria
+    LEFT JOIN ImagenesCotizacion i ON c.Id_Cotizacion = i.Id_Cotizacion
+    WHERE c.Id_Cotizacion = pId_Cotizacion
+    GROUP BY c.Id_Cotizacion;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE imagenesProgreso(IN iId_Cotizacion INT)
+BEGIN 
+    SELECT Id_Imagen, url, descripcion, fechaSubida FROM ImagenesProgreso WHERE Id_Cotizacion = iId_Cotizacion;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE listaComentarios(
+    IN iId_Cotizacion INT
+)
+BEGIN
+    SELECT * FROM Comentarios WHERE Id_Cotizacion = iId_Cotizacion ORDER BY Fecha ASC;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE registrarComentario(
+  IN cId_Cotizacion INT,
+  IN cId_Usuario INT,
+  IN cMensaje Varchar(255)
+)
+BEGIN 
+         INSERT INTO Comentarios (Id_Cotizacion, Id_Usuario, Mensaje)
+         VALUES (cId_Cotizacion,cId_Usuario,cMensaje);
+
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE validarSecretFA(
+    IN iCorreo varchar(255)
+)
+BEGIN
+    SELECT SecretFA FROM Usuarios WHERE Correo = iCorreo;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE guardarSecretFA(
+    IN pId_Usuario INT,
+    IN pSecretFA VARCHAR(255)
+)
+BEGIN
+    UPDATE Usuarios  SET SecretFA = pSecretFA where Id_Usuario = pId_Usuario;
+    
+END $$
+
+DELIMITER ;
+
+Use serenia 
+Select *from usuarios
+Select *from detallesdisenio
+
+CALL imagenesProgreso(4)
 
 
 

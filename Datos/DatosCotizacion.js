@@ -36,11 +36,29 @@ export function obtenerCotizacionesDeUsuario(idUsuario, callback) {
   conexion.query(sql, [idUsuario], callback);
 }
 
+// Obtener detalle de una cotización
+export function obtenerCotizacion(idCotizacion, callback) {
+  const sql = `
+    CALL ObtenerCotizacion(?)
+  `;
+  conexion.query(sql, [idCotizacion], (err, resultado) => {
+    if (err) return callback(err);
+    callback(null, resultado[0]);
+  });
+}
+
 export function obtenerProgresoPorCotizacion(idCotizacion, callback) {
   const sql = `
-    CALL ObtenerProgresoCotizaciones(?)
+    CALL ObtenerProgresoPorCotizacion(?)
   `;
-  conexion.query(sql, [idCotizacion], callback);
+  conexion.query(sql, [idCotizacion], (err, result) => {
+    if (err) {
+      console.error("Error al obtener el progreso:", err);
+      callback(err, null);
+      return;
+    }
+    callback(null, result[0]);
+  });
 }
 
 export function obtenerServicios(callback) {
@@ -60,3 +78,33 @@ export function obtenerEspacios(callback) {
   });
 }
 
+export function guardarDetallesDisenio(datos, callback) { 
+  const sql = `CALL guardarDetallesDisenio(?,?,?,?)`;
+  conexion.query(
+    sql,
+    [datos.Id_Cotizacion, datos.EstiloDeseado, datos.MaterialesDeseados, datos.Id_Tablero],
+    callback
+  );
+}
+
+export function registrarPagoDB(datos, callback) {
+  const sql = `
+    CALL registrarPago(?,?,'Completado')
+  `;
+  conexion.query(sql,[datos.Id_Cotizacion, datos.Monto], callback);
+}
+
+export function obtenerImagenesProgreso(idCotizacion, callback) {
+  const sql = "CALL imagenesProgreso(?)";
+  conexion.query(sql, [idCotizacion], callback);
+}
+
+export function obtenerComentariosDB(idCotizacion, callback){
+  const sql = `SELECT * FROM Comentarios WHERE Id_Cotizacion = ? ORDER BY fecha ASC`;
+  conexion.query(sql, [idCotizacion], callback);
+}
+
+export function agregarComentarioDB({ Id_Cotizacion, autor, mensaje }, callback){
+  const sql = `INSERT INTO Comentarios (Id_Cotizacion, autor, mensaje, fecha) VALUES (?, ?, ?, NOW())`;
+  conexion.query(sql, [Id_Cotizacion, autor, mensaje], callback);
+}

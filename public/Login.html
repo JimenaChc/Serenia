@@ -16,6 +16,22 @@
       <input type="email" class="form-control" name="Correo" placeholder="Correo electrónico" required>
       <input type="password" class="form-control" name="Contrasena" placeholder="Contraseña" required>
       <button class="btn-login mt-2">Entrar</button>
+      <!-- Botón de registro/login con Google -->
+<div class="text-center mt-3">
+  <div id="g_id_onload"
+       data-client_id=""
+       data-callback="handleCredentialResponse">
+
+  </div>
+  <div class="g_id_signin"
+       data-type="standard"
+       data-shape="rectangular"
+       data-theme="outline"
+       data-text="signup_with"
+       data-size="large"
+       data-logo_alignment="left">
+  </div>
+</div>
     </form>
 
     <div id="mensajeFlotante" class="mensaje-flotante"></div>
@@ -25,7 +41,7 @@
       <p>¿No tienes cuenta? <a href="registro.html">Crea una aquí</a></p>
     </div>
   </div>
-
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="./js/login.js"></script>
 </body>
 </html>

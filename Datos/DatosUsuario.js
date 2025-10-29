@@ -1,4 +1,7 @@
 import conexion from "../Config/db.js";
+import dotenv from "dotenv";
+dotenv.config();
+
 
 //Registro
 export const crearUsuario = (usuario, callback) => {
@@ -20,6 +23,11 @@ export function buscarPorCorreo(correo, callback){
     callback(null, usuario);
   });
 };
+
+//Client ID Google 
+export function obtenerGoogleClientID() {
+  return process.env.GOOGLE_CLIENT_ID;
+}
 
 
 // Obtener un usuario por ID
@@ -49,5 +57,29 @@ export function ActualizarFotoPerfil(idUsuario, urlFoto, callback) {
     CALL ActualizarFotoPerfil(?,?)
   `;
   conexion.query(sql, [idUsuario,urlFoto], callback);
+}
+
+export function guardarSecretFA(idUsuario, secret, callback) {
+  const sql = `CALL guardarSecretFA(?,?)`;
+  conexion.query(sql, [idUsuario, secret], (err, results) => {
+    if (err) {
+      console.error("guardarSecretFA error:", err);
+      return callback(err);
+    }
+   
+    callback(null, results);
+  });
+}
+// Obtener secreto 2FA para validar el código
+export function obtenerSecretFA(idUsuario, callback) {
+  const sql = `CALL validarSecretFA(?)`;
+  conexion.query(sql, [idUsuario], (err, results) => {
+    if (err) {
+      console.error("obtenerSecretFA error:", err);
+      return callback(err);
+    }
+    const row = results?.[0]?.[0] || results?.[0];
+    callback(null, row?.SecretFA ?? null);
+  });
 }
 

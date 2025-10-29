@@ -4,9 +4,16 @@ import {
   crearCotizacion,
   agregarImagenACotizacion,
   obtenerCotizacionesDeUsuario,
+  obtenerCotizacion,
   obtenerProgresoPorCotizacion,
   obtenerServicios,
-   obtenerEspacios
+   obtenerEspacios,
+   guardarDetallesDisenio,
+   registrarPagoDB,
+   obtenerImagenesProgreso,
+   obtenerComentariosDB,
+   agregarComentarioDB
+   
 } from "../Datos/DatosCotizacion.js";
 
 export async function registrarCotizacion(datos, imagenes = []) {
@@ -54,6 +61,15 @@ export function listarCotizacionesUsuario(idUsuario) {
   });
 }
 
+export function servicioObtenerCotizacion(idCotizacion) {
+  return new Promise((resolve, reject) => {
+    obtenerCotizacion(idCotizacion, (err, resultado) => {
+      if (err) return reject(err);
+      resolve(resultado);
+    });
+  });
+}
+
 export function consultarProgreso(idCotizacion, callback) {
   obtenerProgresoPorCotizacion(idCotizacion, (err, result) => {
     if (err) return callback(err);
@@ -83,3 +99,26 @@ export function servicioListarEspacios(callback) {
   });
 }
 
+export function servicioGuardarDisenio(datos, callback) {
+  guardarDetallesDisenio(datos, callback);
+}
+
+export function servicioRegistrarPago(datos, callback) {
+  registrarPagoDB(datos, callback);
+}
+
+export function servicioObtenerImagenesProgreso(idCotizacion, callback) {
+  obtenerImagenesProgreso(idCotizacion, (err, resultados) => {
+    if (err) return callback(err);
+    callback(null, resultados[0] || []);
+  });
+}
+
+
+export function servicioObtenerComentarios(idCotizacion, callback) {
+  obtenerComentariosDB(idCotizacion, callback);
+}
+
+export function servicioAgregarComentario(datos, callback) {
+  agregarComentarioDB(datos, callback);
+}
