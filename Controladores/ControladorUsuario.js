@@ -30,6 +30,7 @@ export async function obtenerGoogleClientID(req, res) {
 }
 
 export async function login(req, res) {
+  console.log("Llegó petición al login", req.body); 
   const { Correo, Contrasena } = req.body;
 
   try {

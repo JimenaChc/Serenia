@@ -1,3 +1,4 @@
+console.log("login.js cargado correctamente");
 document.getElementById("formLogin")?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -16,13 +17,15 @@ document.getElementById("formLogin")?.addEventListener("submit", async (e) => {
       // Guardar usuario en localStorage
       localStorage.setItem("usuario", JSON.stringify(data.usuario));
       localStorage.setItem("idUsuario", data.usuario.Id_Usuario);
-      if (data.usuario.NecesitaConfigurar2FA) {
-        window.location.href = "ActivarFA.html";
-      } else {
-        window.location.href = "verificarFA.html";
-      }
-    } else {
-      mostrarMensajeLogin(data.error, "error");
+      const necesita2FA = data.usuario?.necesitaConfigurar2FA || data.necesitaConfigurar2FA;
+
+if (necesita2FA) {
+  window.location.href = "ActivarFA.html";
+} else {
+  window.location.href = "verificarFA.html";
+}
+    console.log("Respuesta backend:", data);
+  mostrarMensajeLogin(data.error || "Error al iniciar sesión", "error");
     }
   } catch (err) {
     mostrarMensajeLogin("Error de conexión con el servidor", "error");

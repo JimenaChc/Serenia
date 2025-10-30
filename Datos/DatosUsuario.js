@@ -2,7 +2,6 @@ import conexion from "../Config/db.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-
 //Registro
 export const crearUsuario = (usuario, callback) => {
   const sql = `CALL RegistrarUsuario(?, ?, ?, ?, ?)`;

@@ -20,8 +20,6 @@ export async function registrarUsuario(nombre, apellidos, correo, contrasena, te
 
 export function servicioObtenerGoogleClientID() {
   const clientId = process.env.GOOGLE_CLIENT_ID;
-
-  console.log("[Servicio] GOOGLE_CLIENT_ID:", clientId); // para verificar
   return clientId;
 }
 
@@ -31,12 +29,18 @@ export async function loginUsuario(correo, contrasena) {
       if (err) return reject("Error al consultar usuario");
       if (!usuario) return reject("Usuario no encontrado");
 
-     if (usuario.Contrasena !== contrasena) return reject("Contraseña incorrecta");
+    if (usuario.Contrasena !== contrasena || usuario.Correo !== correo)
+      return reject("Correo o contraseña incorrectas");
+
+console.log("Usuario desde DB:", usuario);
+console.log("Correo recibido:", correo, "Contraseña recibida:", contrasena);
+    const necesitaConfigurar2FA = !usuario.SecretFA || usuario.SecretFA.trim() === "";
   
       resolve({
         Id_Usuario: usuario.Id_Usuario,
         Nombre: usuario.Nombre,
         Correo: usuario.Correo,
+        necesitaConfigurar2FA
       });
     });
   });
