@@ -3,18 +3,24 @@ import dotenv from "dotenv";
 dotenv.config();
 import { OAuth2Client } from "google-auth-library";
 import speakeasy from "speakeasy";
-import qrcode from "qrcode";
+import bcrypt from "bcrypt";
+import Encriptador from "./ServicioEncriptarDesencriptar.js";
 import { buscarPorCorreo,crearUsuario,obtenerGoogleClientID, guardarSecretFA, obtenerSecretFA,ObtenerUsuario,ActualizarDatosUsuario,ActualizarFotoPerfil } from "../Datos/DatosUsuario.js";
-import bcrypt from "bcryptjs";
 
+const encriptador = new Encriptador(process.env.ENCRYPTION_SECRET, process.env.ENCRYPTION_SALT);
 export async function registrarUsuario(nombre, apellidos, correo, contrasena, telefono) {
-  return new Promise((resolve, reject) => {
-    const sql = "CALL RegistrarUsuario(?, ?, ?, ?, ?)";
-    conexion.query(sql, [nombre, apellidos, correo, contrasena, telefono], (err, resultado) => {
-      if (err) reject(err);
-      else resolve(resultado);
-      }
-    );
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Cifrar la contraseña antes de guardarla
+      const hash = await bcrypt.hash(contrasena, SALT_ROUNDS);
+      const sql = "CALL RegistrarUsuario(?, ?, ?, ?, ?)";
+      conexion.query(sql, [nombre, apellidos, correo, hash, telefono], (err, resultado) => {
+        if (err) reject(err);
+        else resolve(resultado);
+      });
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -28,13 +34,21 @@ export async function loginUsuario(correo, contrasena) {
     buscarPorCorreo(correo, async (err, usuario) => {
       if (err) return reject("Error al consultar usuario");
       if (!usuario) return reject("Usuario no encontrado");
+    
 
-    if (usuario.Contrasena !== contrasena || usuario.Correo !== correo)
-      return reject("Correo o contraseña incorrectas");
+     const esValida = await bcrypt.compare(contrasena, usuario.Contrasena);
+      if (!esValida) return reject("Correo o contraseña incorrectas");
 
-console.log("Usuario desde DB:", usuario);
-console.log("Correo recibido:", correo, "Contraseña recibida:", contrasena);
+ 
     const necesitaConfigurar2FA = !usuario.SecretFA || usuario.SecretFA.trim() === "";
+
+    let telefonoDescifrado = usuario.Telefono;
+      try {
+        telefonoDescifrado = descifrarTexto(usuario.Telefono);
+      } catch (e) {
+        // si falla, lo dejamos tal cual
+        telefonoDescifrado = usuario.Telefono;
+      }
   
       resolve({
         Id_Usuario: usuario.Id_Usuario,
@@ -100,6 +114,11 @@ export function servicioObtenerUsuario(idUsuario) {
   return new Promise((resolve, reject) => {
     ObtenerUsuario(idUsuario, (err, usuario) => {
       if (err) return reject(err);
+      try {
+        if (usuario && usuario.Telefono) usuario.Telefono = descifrarTexto(usuario.Telefono);
+      } catch (e) {
+        // si falla, devolvemos lo que haya
+      }
       resolve(usuario);
     });
   });
@@ -108,6 +127,9 @@ export function servicioObtenerUsuario(idUsuario) {
 // Actualizar datos generales
 export function servicioActualizarDatosUsuario(idUsuario, datos) {
   return new Promise((resolve, reject) => {
+     if (datos && datos.telefono !== undefined && datos.telefono !== null) {
+      datos.telefono = datos.telefono ? cifrarTexto(datos.telefono) : datos.telefono;
+    }
     ActualizarDatosUsuario(idUsuario, datos, (err) => {
       if (err) return reject(err);
       resolve({ mensaje: "Datos actualizados correctamente" });
@@ -132,8 +154,10 @@ export function generarSecretoFA(idUsuario) {
     // Genera objeto completo para obtener base32 y otpauth_url
     const secretObj = speakeasy.generateSecret({ length: 20 }); 
     const secretBase32 = secretObj.base32;
+
+     const secretCifrado = encriptador.cifrar(secretBase32);
     // Guardar en la BD con la función de datos corregida
-    guardarSecretFA(idUsuario, secretBase32, (err, result) => {
+    guardarSecretFA(idUsuario, secretCifrado, (err, result) => {
       if (err) {
         console.error("Servicio -> guardarSecretFA falló:", err);
         return reject(err);
@@ -147,10 +171,10 @@ export function generarSecretoFA(idUsuario) {
 // Validar código TOTP ingresado por el usuario
 export function validarCodigoFA(idUsuario, codigo) {
   return new Promise((resolve, reject) => {
-    obtenerSecretFA(idUsuario, (err, secreto) => {
+    obtenerSecretFA(idUsuario, (err, secretoCifrado) => {
       if (err) return reject(err);
-      if (!secreto) return resolve(false);
-
+      if (!secretoCifrado) return resolve(false);
+      const secreto = encriptador.descifrar(secretoCifrado);
       const isValid = speakeasy.totp.verify({
         secret: secreto,
         encoding: "base32",

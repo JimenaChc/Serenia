@@ -1,5 +1,6 @@
 // Servicios/ServicioCotizacion.js
 import cloudinary from "../Config/cloudinary.js";
+import Encriptador from "../Servicios/ServicioEncriptarDesencriptar.js";
 import {
   crearCotizacion,
   agregarImagenACotizacion,
@@ -16,9 +17,17 @@ import {
    
 } from "../Datos/DatosCotizacion.js";
 
+const encriptador = new Encriptador(process.env.ENCRYPTION_SECRET, process.env.ENCRYPTION_SALT);
 export async function registrarCotizacion(datos, imagenes = []) {
   return new Promise((resolve, reject) => {
-    crearCotizacion(datos, async (err, resultado) => {
+
+    //Encriptamos datos sensibles 
+    const datosCifrados = {
+      ...datos,
+      Ubicacion: encriptador.cifrar(datos.Ubicacion),
+      MontoEstimado: encriptador.cifrar(datos.MontoEstimado),
+    };
+    crearCotizacion(datosCifrados, async (err, resultado) => {
       if (err) return reject(err);
 
       // Obtenemos el ID de la cotización recién creada
@@ -56,6 +65,10 @@ export function listarCotizacionesUsuario(idUsuario) {
   return new Promise((resolve, reject) => {
     obtenerCotizacionesDeUsuario(idUsuario, (err, resultado) => {
       if (err) return reject(err);
+      resultado.forEach(c => {
+        c.Ubicacion = encriptador.descifrar(c.Ubicacion);
+        c.MontoEstimado = encriptador.descifrar(c.MontoEstimado);
+      });
       resolve(resultado);
     });
   });
@@ -65,6 +78,11 @@ export function servicioObtenerCotizacion(idCotizacion) {
   return new Promise((resolve, reject) => {
     obtenerCotizacion(idCotizacion, (err, resultado) => {
       if (err) return reject(err);
+      if (resultado && resultado.length > 0) {
+        const cotizacion = resultado[0];
+        cotizacion.Ubicacion = encriptador.descifrar(cotizacion.Ubicacion);
+        cotizacion.MontoEstimado = encriptador.descifrar(cotizacion.MontoEstimado);
+      }
       resolve(resultado);
     });
   });
@@ -104,7 +122,11 @@ export function servicioGuardarDisenio(datos, callback) {
 }
 
 export function servicioRegistrarPago(datos, callback) {
-  registrarPagoDB(datos, callback);
+  const datosCifrados = {
+    ...datos,
+    monto: encriptador.cifrar(datos.monto),
+  };
+  registrarPagoDB(datosCifrados, callback);
 }
 
 export function servicioObtenerImagenesProgreso(idCotizacion, callback) {

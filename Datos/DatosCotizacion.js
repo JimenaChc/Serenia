@@ -4,7 +4,7 @@ import conexion from "../Config/db.js";
 // Crear una nueva cotización
 export function crearCotizacion(cotizacion, callback) {
   const sql = `
-    CALL CrearCotizacion(?, ?, ?, ?, ?, ?, ?)
+    CALL CrearCotizacion(?, ?, ?, ?, ?, ?, ?,?)
   `;
   conexion.query(
     sql,
@@ -16,6 +16,7 @@ export function crearCotizacion(cotizacion, callback) {
       cotizacion.Descripcion,
       cotizacion.MontoEstimado,
       "En revisión",
+      cotizacion.Ubicacion
     ],
     callback
   );

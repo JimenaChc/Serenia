@@ -1,4 +1,7 @@
-import { registrarUsuario, servicioObtenerGoogleClientID, loginORegistrarConGoogle, generarSecretoFA,validarCodigoFA, loginUsuario , servicioActualizarDatosUsuario,servicioActualizarFotoPerfil,servicioObtenerUsuario} from "../Servicios/ServicioUsuario.js";
+import { registrarUsuario, servicioObtenerGoogleClientID, loginORegistrarConGoogle,
+   generarSecretoFA,validarCodigoFA, loginUsuario , servicioActualizarDatosUsuario,
+   servicioActualizarFotoPerfil,servicioObtenerUsuario,
+ } from "../Servicios/ServicioUsuario.js";
 
 export async function registrar(req, res) {
   const { Nombre, Apellidos, Correo, Contrasena, Telefono } = req.body;
@@ -30,7 +33,7 @@ export async function obtenerGoogleClientID(req, res) {
 }
 
 export async function login(req, res) {
-  console.log("Llegó petición al login", req.body); 
+   
   const { Correo, Contrasena } = req.body;
 
   try {

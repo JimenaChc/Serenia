@@ -8,7 +8,7 @@ import {
   googleAuth,
   generarFAUsuario,
   verificar2FA,
-  obtenerGoogleClientID
+  obtenerGoogleClientID,
 } from "../Controladores/ControladorUsuario.js";
 
 const router = express.Router();

@@ -107,13 +107,6 @@ CREATE TABLE ImagenesProgreso (
   FOREIGN KEY (Id_Cotizacion) REFERENCES cotizaciones(Id_Cotizacion)
 );
 
-Select *from cotizaciones
-Select *from ImagenesProgreso
-ALTER TABLE ImagenesProgreso
-ADD CONSTRAINT fk_imagenes_progreso
-FOREIGN KEY (Id_Cotizacion) REFERENCES cotizaciones(Id_Cotizacion);
-
-
 CREATE TABLE DetallesDisenio(
   Id_Detalle INT PRIMARY KEY AUTO_INCREMENT,
   Id_Cotizacion INT NOT NULL,
@@ -141,6 +134,29 @@ Fecha DATETIME DEFAULT NOW(),
 FOREIGN KEY (Id_Cotizacion) REFERENCES cotizaciones(Id_Cotizacion) 
 );
 
+CREATE TABLE VerificacionesCorreo (
+  Id_Verificacion INT AUTO_INCREMENT PRIMARY KEY,
+  Correo VARCHAR(150) NOT NULL,
+  Token VARCHAR(100) NOT NULL,
+  FechaCreacion DATETIME NOT NULL
+);
+
+CREATE TABLE Acciones (
+    Id_Accion INT PRIMARY KEY AUTO_INCREMENT,
+    NombreAccion VARCHAR(100) NOT NULL,
+    Descripcion VARCHAR(255)
+);
+
+CREATE TABLE Auditoria (
+    Id_Auditoria INT PRIMARY KEY AUTO_INCREMENT,
+    Id_Usuario INT NULL,
+    Id_Accion INT NOT NULL,
+    Fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Descripcion TEXT,
+    
+    FOREIGN KEY (Id_Usuario) REFERENCES Usuarios(Id_Usuario),
+    FOREIGN KEY (Id_Accion) REFERENCES Acciones(Id_Accion)
+);
 
 
 CREATE PROCEDURE RegistrarUsuario(
@@ -369,44 +385,7 @@ BEGIN
 END $$
 DELIMITER ;
 
-Select *from Categorias
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063137/Esc_Hongo_hefogu.jpg","Hongo Rave","Selvatico, festival de musica",8)  
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063151/Crafted_Spaces_rprois.jpg","Wood Cocina","Cocina elegante ",1)  
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063151/41b8f7d8-4c12-43c0-86f3-50de2511b67d_pndmjc.jpg","Med house","Decoración de casa completa, espacios calidos",1)  
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063151/bb5c0de1-550d-4327-a8cd-3f76ee906c62_inb7x8.jpg","Futiger Room","Habitación moderna",2)  
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063150/kitchen_ideas_gk7dbi.jpg","Beige room","Comedor minimalista con detalles de textura",3)  
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063150/a1c3ff32-6c19-4125-be51-b3930a6ff200_tyesf6.jpg","Light Nature","Comedor organico, con muchas plantas que le dan un aire fresco y acogedor",3)  
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063149/94c904ac-40dc-476e-94cd-b3aedee2b2aa_nuy9ka.jpg","Restaurante Fantasy","Restaurante con aires de magia y fantasia!",6)  
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063149/LoungeBar_p6kiix.jpg","Elegant pure","Aires frescos, modernos y elegantes",6)  
 
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063149/564971f2-04dc-4d34-93be-d50b99cc3ce5_hmfjhg.jpg","Red Velvet bath","Baño romantico, elgante con aires florales",5)  
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063149/interior_aesthetics_home_spxcpq.jpg","Comedor Climb","Cocina - comedor rustico pero moderno",3)  
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063148/8224737c-8303-4962-87d6-fdf50d8e22b8_mvphtx.jpg","Restaurante dom","Busca transmitirte, calma, serenidad y conexion",6)  
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063147/95edda32-e989-44fd-b3e9-9a73a888e779_nrqlby.jpg","Bath out","Te sentiras duchandote al aire libre",5)  
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063147/a21c4377-90bc-48c9-b96e-d4e9e78ac430_pj2jne.jpg","Confy Bath","Mucha luz natural, tenue y aires frescos",5)  
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063146/All_Posts_Instagram_sftvyi.jpg","Retro Room","Habitación con toques retros y vintage sin olvidar la modernidad",2)  
-
-CALL AgregarImagen("https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063146/ca9449e8-f942-44ff-b56a-10e9f896f869_qs9nl8.jpg","Retro Room","Habitación con toques retros y vintage sin olvidar la modernidad",2)  
-
-Use Serenia
-Delete from imagenes where Id_Imagen = 2
-Select * from imagenesprogreso
-Select * from cotizaciones
-Select * from progresocotizacion
-Select * from imagenescotizacion
-
-CALL ObtenerCotizaciones (8)
-INSERT INTO categorias (Nombre) Values ("Habitacion")
-INSERT INTO categorias (Nombre) Values ("Comedor")
-INSERT INTO categorias (Nombre) Values ("Sala")
-INSERT INTO categorias (Nombre) Values ("Baño")
-INSERT INTO categorias (Nombre) Values ("Restaurante")
-INSERT INTO categorias (Nombre) Values ("Concierto")
-INSERT INTO categorias (Nombre) Values ("Festival de musica")
-INSERT INTO categorias (Nombre) Values ("Pasarela")
-INSERT INTO categorias (Nombre) Values ("Escenario")
-INSERT INTO categorias (Nombre) Values ("VideoClip")
-INSERT INTO categorias (Nombre) Values ("Set")
 
 ALTER TABLE Cotizaciones
 MODIFY COLUMN Estado ENUM('En revisión','Aprobada','En desarrollo','Rechazada','Terminada') DEFAULT 'En revisión';
@@ -537,12 +516,64 @@ BEGIN
 END $$
 
 DELIMITER ;
+INSERT INTO Acciones (Id_Accion, NombreAccion, Descripcion) VALUES
+(1, 'Registrar Usuario', 'Un usuario se registró en la plataforma'),
+(2, 'Login Usuario', 'Un usuario inició sesión'),
+(3, 'Actualizar Datos Usuario', 'El usuario actualizó su información personal'),
+(4, 'Actualizar Foto Perfil', 'El usuario actualizó su foto de perfil'),
 
-Use serenia 
+(5, 'Crear Tablero', 'El usuario creó un tablero'),
+(6, 'Agregar Imagen General', 'Se agregó una imagen al sistema'),
+(7, 'Agregar Imagen a Tablero', 'El usuario agregó una imagen a un tablero'),
+
+(8, 'Registrar Like', 'El usuario dio like a una imagen'),
+
+(9, 'Crear Cotización', 'Se creó una cotización'),
+(10, 'Agregar Imagen a Cotización', 'Se agregó imagen a cotización'),
+
+(11, 'Registrar Pago', 'Se registró un pago en una cotización'),
+(12, 'Registrar Detalles de Diseño', 'Se guardaron detalles de diseño'),
+
+(13, 'Actualizar Progreso Cotización', 'Se actualizó el estado del progreso de una cotización');
+
+
+DELIMITER $$
+
+CREATE FUNCTION fn_ObtenerUsuarioPorCorreo(pCorreo VARCHAR(100))
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE vIdUsuario INT;
+
+    SELECT Id_Usuario INTO vIdUsuario
+    FROM Usuarios
+    WHERE Correo = pCorreo
+    LIMIT 1;
+
+    RETURN vIdUsuario;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE sp_RegistrarAuditoria(
+    IN pIdUsuario INT,
+    IN pIdAccion INT,
+    IN pDescripcion TEXT
+)
+BEGIN
+    INSERT INTO Auditoria (Id_Usuario, Id_Accion, Descripcion)
+    VALUES (pIdUsuario, pIdAccion, pDescripcion);
+END$$
+
+DELIMITER ;
+
 Select *from usuarios
-Select *from detallesdisenio
 
-CALL imagenesProgreso(4)
+
+
+
 
 
 
