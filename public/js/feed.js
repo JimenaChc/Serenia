@@ -20,11 +20,15 @@ async function cargarImagenes() {
   cargando = true;
 
   try {
+    contenedor.insertAdjacentHTML("beforeend", `<p id="loaderFeed" class="text-center text-muted">Cargando...</p>`);
+
     const res = await fetch(`/api/imagenes/feed?pagina=${pagina}`);
     if (!res.ok) throw new Error(`Error: ${res.status}`);
-    const imagenes = await res.json();
 
-    if (!imagenes || imagenes.length === 0) {
+    const imagenes = await res.json();
+    document.getElementById("loaderFeed")?.remove();
+
+    if (!imagenes.length) {
       window.removeEventListener("scroll", scrollHandler);
       return;
     }
@@ -32,20 +36,28 @@ async function cargarImagenes() {
     imagenes.forEach(img => {
       const div = document.createElement("div");
       div.classList.add("feed-item");
+
       div.innerHTML = `
-        <img data-id="${img.Id_Imagen}" src="${img.Url}" alt="${img.Titulo || ''}" title="${img.Descripcion || ''}" class="imagen-feed">
+        <img loading="lazy" data-id="${img.Id_Imagen}" src="${img.Url}" 
+        alt="${img.Titulo || ''}" 
+        title="${img.Descripcion || ''}" 
+        class="imagen-feed">
       `;
+
       contenedor.appendChild(div);
     });
 
     pagina++;
+
   } catch (err) {
     console.error(err);
     mostrarMensaje("No se pudieron cargar las imágenes");
-  } finally {
-    cargando = false;
+    document.getElementById("loaderFeed")?.remove();
   }
+
+  cargando = false;
 }
+
 
 // Scroll infinito
 function scrollHandler() {
@@ -74,42 +86,48 @@ function inicializarEventosModal() {
 
 // Me gusta
 async function manejarLike(idImagen) {
-  if (!idImagen) {
-    mostrarMensaje("No se pudo identificar la imagen");
-    return;
-  }
+  if (!idImagen) return mostrarMensaje("No se pudo identificar la imagen");
+
+  const btn = document.getElementById("btnLike");
+  btn.disabled = true;
+
   try {
     const usuario = JSON.parse(localStorage.getItem("usuario"));
-  const idUsuario = usuario?.Id_Usuario;
-  if (!idUsuario) {
-      mostrarMensaje("Usuario no identificado");
-      return;
-    }
+    const idUsuario = usuario?.Id_Usuario;
+
+    if (!idUsuario) return mostrarMensaje("Usuario no identificado");
+
     const response = await fetch("/api/imagenes/like", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idUsuario,idImagen })
+      body: JSON.stringify({ idUsuario, idImagen })
     });
+
     const data = await response.json();
-    mostrarMensaje(data.mensaje || "Me gusta!");
+    mostrarMensaje(data.mensaje || "Me gusta registrado");
+
   } catch (err) {
     console.error(err);
     mostrarMensaje("Error al registrar el 'Me gusta'");
   }
+
+  btn.disabled = false;
 }
 
 // Mostrar modal de selección de tablero
 async function mostrarModalSeleccionarTablero(idImagen) {
   idImagenSeleccionada = idImagen;
+
   const usuario = JSON.parse(localStorage.getItem("usuario"));
-  const idUsuario = usuario?.Id_Usuario || 1;
+  const idUsuario = usuario?.Id_Usuario;
+
+  const contenedorTableros = document.getElementById("contenedorTableros");
+  contenedorTableros.innerHTML = "<p class='text-center text-muted'>Cargando tableros...</p>";
 
   try {
     const res = await fetch(`/api/tableros/listar/${idUsuario}`);
-    if (!res.ok) throw new Error("No se pudieron cargar los tableros");
     const tableros = await res.json();
 
-    const contenedorTableros = document.getElementById("contenedorTableros");
     contenedorTableros.innerHTML = "";
 
     if (!tableros.length) {
@@ -128,9 +146,10 @@ async function mostrarModalSeleccionarTablero(idImagen) {
     }
 
     modalSeleccionar.show();
+
   } catch (err) {
     console.error(err);
-    mostrarMensaje("Error al cargar los tableros");
+    mostrarMensaje("Error cargando tableros");
   }
 }
 
@@ -176,7 +195,8 @@ async function crearTablero(nombre) {
     if (!data.id) throw new Error("No se pudo obtener el ID del tablero");
 
     // Guardar la imagen recién seleccionada en el tablero creado
-    await guardarEnTablero(data.id, idImagenSeleccionada);
+     const idTableroNuevo = data.id;
+    await guardarEnTablero(idTableroNuevo, idImagenSeleccionada);
 
     mostrarMensaje("Tablero creado y guardado con éxito");
     document.getElementById("formNuevoTablero").classList.add("d-none");
@@ -200,14 +220,12 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnRegresar").addEventListener("click", () => modalImagen.hide());
 
   document.getElementById("btnLike").addEventListener("click", (e) => {
-    const idImagen = e.currentTarget.getAttribute("data-id");
-    manejarLike(idImagen);
+    manejarLike(e.target.getAttribute("data-id"));
   });
 
   document.getElementById("btnGuardar").addEventListener("click", (e) => {
-    const id = e.target.getAttribute("data-id");
     modalImagen.hide();
-    setTimeout(() => mostrarModalSeleccionarTablero(id), 300); // Espera 300ms para que Bootstrap termine de cerrarlo
+    setTimeout(() => mostrarModalSeleccionarTablero(e.target.getAttribute("data-id")), 300);
   });
 
   document.getElementById("btnNuevoTablero").addEventListener("click", () => {

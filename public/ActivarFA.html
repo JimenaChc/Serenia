@@ -5,14 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Activar 2FA - Serenia</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/estilos.css" />
 </head>
 <body class="auth-container">
-  <div class="container mt-5">
-    <h2>Activar doble factor de autenticación</h2>
-    <p>Introduce este código en tu app Google Authenticator:</p>
-    <p id="codigoSecreto" class="fw-bold fs-4"></p>
-    <button id="btnListo" class="btn btn-success mt-3">He configurado la app</button>
+
+  <div class="formulario-container text-center">
+    <div class="formulario-titulo">Activa la app de Google Authenticador</div>
+    <p>Para garantizar tu seguridad utilizamos una app que genera códigos de seguridad que los necesitaras para iniciar sesión.</p>
+    <p>Descarga la app de "Google Authenticator" e introduce este código para poder continuar:</p>
+
+    <div class="codigo-container">
+      <p id="codigoSecreto" class="fw-bold fs-4 my-3"></p>
+      <button class="btn-copiar" id="btnCopiar">Copiar código</button>
+    </div>
+
+    <button id="btnListo" class="btn-hecho mt-3">He configurado la app</button>
   </div>
+
+  <div id="mensajeFlotante" class="mensaje-flotante"></div>
 
   <script src="./js/2FactorAutenticacion.js"></script>
 </body>

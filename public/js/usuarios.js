@@ -1,6 +1,10 @@
 // Registro
 document.getElementById("formRegistro")?.addEventListener("submit", async (e) => {
   e.preventDefault();
+  const btn = e.submitter;
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Registrando...";
   const datos = Object.fromEntries(new FormData(e.target));
 
   const res = await fetch("/api/usuarios/registro", {
@@ -12,6 +16,8 @@ document.getElementById("formRegistro")?.addEventListener("submit", async (e) =>
   const data = await res.json();
   mostrarMensajeFlotante("Usuario registrado correctamente");
   if (res.ok) window.location.href = "login.html";
+  btn.disabled = false;
+  btn.textContent = originalText;
 });
 
 function mostrarMensajeFlotante(texto, duracion = 2000) {

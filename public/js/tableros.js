@@ -13,41 +13,41 @@ const idUsuario = usuario?.Id_Usuario || 1;
 
 // Cargar todos los tableros del usuario
 async function cargarTableros() {
+  contenedorTablerosGrid.innerHTML =
+    `<p class="text-center text-muted">Cargando tableros...</p>`;
+
   try {
     const res = await fetch(`/api/tableros/listar/${idUsuario}`);
-    if (!res.ok) throw new Error("Error al obtener tableros");
     const tableros = await res.json();
 
     contenedorTablerosGrid.innerHTML = "";
 
     if (!tableros.length) {
-      contenedorTablerosGrid.innerHTML = "<p class='text-center text-muted'>No tienes tableros aún.</p>";
+      contenedorTablerosGrid.innerHTML =
+        `<p class="text-center text-muted">No tienes tableros aún.</p>`;
       return;
     }
 
     for (const tablero of tableros) {
+
       const card = document.createElement("div");
       card.className = "tablero-card";
 
-      // Creamos un collage con hasta 4 imágenes del tablero
       const previewDiv = document.createElement("div");
       previewDiv.className = "tablero-preview";
 
+      // Cargar imágenes del tablero
       const imgRes = await fetch(`/api/tableros/imagenes/${tablero.Id_Tablero}`);
       const imagenes = imgRes.ok ? await imgRes.json() : [];
 
-      const maxPreviews = 4;
-      for (let i = 0; i < maxPreviews; i++) {
+      const max = 4;
+      for (let i = 0; i < max; i++) {
         const img = document.createElement("img");
-        if (imagenes[i]) {
-          img.src = imagenes[i].Url;
-        } else {
-          img.src = "./img/placeholder.png"; // Imagen de placeholder
-        }
+        img.loading = "lazy";
+        img.src = imagenes[i]?.Url || "./img/placeholder.png";
         previewDiv.appendChild(img);
       }
 
-      // Nombre del tablero
       const infoDiv = document.createElement("div");
       infoDiv.className = "tablero-info";
       infoDiv.innerHTML = `<h5>${tablero.Titulo}</h5>`;
@@ -55,14 +55,17 @@ async function cargarTableros() {
       card.appendChild(previewDiv);
       card.appendChild(infoDiv);
 
-      // Click para abrir el tablero y mostrar sus imágenes
-      card.addEventListener("click", () => abrirTablero(tablero.Id_Tablero, tablero.Titulo));
+      card.addEventListener("click", () =>
+        abrirTablero(tablero.Id_Tablero, tablero.Titulo)
+      );
 
       contenedorTablerosGrid.appendChild(card);
     }
+
   } catch (err) {
     console.error(err);
-    contenedorTablerosGrid.innerHTML = "<p class='text-center text-danger'>Error al cargar tableros</p>";
+    contenedorTablerosGrid.innerHTML =
+      `<p class="text-center text-danger">Error al cargar tableros</p>`;
   }
 }
 
@@ -71,6 +74,10 @@ async function abrirTablero(idTablero, titulo) {
   pantallaTableros.classList.add("d-none");
   pantallaImagenesTablero.classList.remove("d-none");
   tituloTablero.textContent = titulo;
+
+  contenedorImagenesTablero.innerHTML =
+    `<p class="text-center text-muted">Cargando imágenes...</p>`;
+
 
   try {
     const res = await fetch(`/api/tableros/imagenes/${idTablero}`);
@@ -85,6 +92,7 @@ async function abrirTablero(idTablero, titulo) {
 
     imagenes.forEach(img => {
       const imagenEl = document.createElement("img");
+      imagenEl.loading = "lazy";
       imagenEl.src = img.Url;
       imagenEl.alt = img.Titulo || "";
       imagenEl.title = img.Descripcion || "";
@@ -108,6 +116,4 @@ btnVolverTableros.addEventListener("click", () => {
 });
 
 // Cargar tableros al inicio
-document.addEventListener("DOMContentLoaded", () => {
-  cargarTableros();
-});
+document.addEventListener("DOMContentLoaded", cargarTableros);

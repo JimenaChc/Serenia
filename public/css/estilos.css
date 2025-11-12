@@ -13,6 +13,11 @@ body {
   margin: 0;
 }
 
+.inst{
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+
+}
 /* Contenedor principal */
 .auth-container {
   background: url("../img/portada-registro.jpg") no-repeat center center/cover;
@@ -21,7 +26,7 @@ body {
 /* Título */
 .auth-container h2 {
   font-family: 'Playfair Display', serif;
-  color: #355c47;
+  color: #ffffff;
   text-align: center;
   font-size: 1.8rem;
   margin-bottom: 1rem;
@@ -59,13 +64,15 @@ body {
 
 /* Enlace inferior */
 .auth-container a {
-  color: #355c47;
+  color: #395135;
   text-decoration: none;
   font-weight: 500;
+  font-size: 1.2rem;
 }
 
 .auth-container a:hover {
   text-decoration: underline;
+  color: #355c47;
 }
 
 /* Pequeños detalles decorativos */
@@ -73,7 +80,7 @@ body {
   text-align: center;
   font-family: 'Playfair Display', serif;
   color: #355c47;
-  font-size: 2rem;
+  font-size: 3rem;
   margin-bottom: 10px;
   align-items: flex-start;
 }
@@ -86,7 +93,7 @@ body {
   }
 
   .auth-container h2 {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
 }
 
@@ -98,6 +105,7 @@ body {
   width: 100%;
   font-weight: 600;
   transition: background 0.3s;
+  color: #c4f1cfe0;
 }
 
 .btn-login:hover {
@@ -209,6 +217,11 @@ body {
 
 
 .bottom-nav .center-btn {
+  font-size: 2rem;
+  color: #555;
+}
+
+.bottom-nav .center-btnactive {
   font-size: 2rem;
   color: #0066ff;
 }
@@ -440,10 +453,10 @@ body.mockup-page {
 /* ===== Carruseles en columna ===== */
 .category-carousel {
   position: relative;
-  border-radius: 20px;
+  border-radius: 15px;
   overflow: hidden;
   margin: 0 auto 2rem;
-  width: 90%;
+  width: 100%;
   max-width: 420px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   background-color: #fff;
@@ -469,9 +482,9 @@ body.mockup-page {
   left: 50%;
   transform: translate(-50%, -50%);
   color: #fff;
-  font-size: 1.7rem;
-  font-weight: 600;
-  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 100;
+  font-family: 'Quicksand', sans-serif;
   text-shadow: 0px 3px 8px rgba(0,0,0,0.5);
 }
 
@@ -545,7 +558,7 @@ body.mockup-page {
 }
 
 .formulario-titulo {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Quicksand', sans-serif;
   font-size: 2rem;
   color: #355c47;
   margin-bottom: 1.5rem;
@@ -617,7 +630,7 @@ body.mockup-page {
   width: 100%;
   border: none;
   border-radius: 20px;
-  background-color: #52734d;
+  background-color: #6fa87d;
   color: #fff;
   font-size: 1.1rem;
   font-weight: 600;
@@ -993,7 +1006,7 @@ body.mockup-page {
 
     .center-btn i {
       font-size: 30px;
-      color: #9a66ff;
+      color: #555;
     }
 
 /* ===== Encabezado de Cotizaciones ===== */
@@ -1002,15 +1015,10 @@ body.mockup-page {
   text-align: center;
   padding: 1rem 0;
   border-radius: 0 0 20px 20px;
-  font-family: 'Quicksand', sans-serif;
   top: 0;
   z-index: 100;
 }
 
-.header-cotizaciones h1 {
-  margin: 0;
-  font-size: 1.8rem;
-}
 
 /* ===== Contenedor de cotizaciones ===== */
 .contenedor-cotizaciones {
@@ -1097,6 +1105,194 @@ body.mockup-page {
   }
 
   .contenedor-cotizaciones {
-    margin: 50px auto 90px;
+    margin: 0 auto 90px;
   }
 }
+
+/*  Pantalla secret */
+    #codigoSecreto {
+      display: inline-block;
+      max-width: 100%;
+      font-family: 'Quicksand', sans-serif;
+      word-break: break-all;
+      text-align: center;
+      background: #f2f1ef;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      margin: 1rem 0;
+    }
+
+    /* Botón de copiar */
+    .btn-copiar {
+      display: inline-block;
+      margin-left: 10px;
+      background-color: #52734d;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-copiar:hover {
+      background-color: #6fa87d;
+    }
+
+    /* Contenedor para el código + botón */
+    .codigo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 480px) {
+      #codigoSecreto {
+        font-size: 1rem;
+        padding: 6px 10px;
+      }
+
+      .btn-copiar {
+        margin-top: 8px;
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .codigo-container {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+
+.vercorreo-wrapper {
+  max-width: 420px;
+  margin: 80px auto 100px;
+  padding: 2rem 1.5rem;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+/* Título y párrafo */
+.vercorreo-wrapper h2 {
+  font-family: 'Playfair Display', serif;
+  color: #355c47;
+  font-size: 1.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.vercorreo-wrapper p {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Responsivo móvil */
+@media (max-width: 480px) {
+  .vercorreo-wrapper {
+    margin: 60px 15px 100px;
+    padding: 1.5rem;
+  }
+
+  .vercorreo-wrapper h2 {
+    font-size: 1.5rem;
+  }
+
+  .vercorreo-wrapper p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Contenedor específico para la pantalla Completar Registro */
+.completar-wrapper {
+  max-width: 520px;
+  width: 90%; 
+  margin: 80px auto 100px;
+  padding: 2rem 1.5rem;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+/* Título */
+.completar-wrapper h2 {
+  font-family: 'Playfair Display', serif;
+  color: #355c47;
+  font-size: 1.8rem;
+  margin-bottom: 1.2rem;
+}
+
+/* Campos de formulario */
+.completar-wrapper .form-control {
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 15px;
+  font-size: 0.95rem;
+  border: 1px solid #ddd;
+  transition: box-shadow 0.3s ease;
+}
+
+.completar-wrapper .form-control:focus {
+  background-color: #fff;
+  box-shadow: 0 0 6px #9ac48a;
+}
+
+/* Botón */
+.completar-wrapper .btn-success {
+  width: 100%;
+  padding: 12px;
+  border-radius: 15px;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.completar-wrapper .btn-success:hover {
+  background-color: #6fa87d;
+}
+
+/* Responsive móvil */
+@media (max-width: 480px) {
+  .completar-wrapper {
+    margin: 60px 15px 100px;
+    padding: 1.5rem;
+  }
+
+  .completar-wrapper h2 {
+    font-size: 1.5rem;
+  }
+
+  .completar-wrapper .form-control {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  .completar-wrapper .btn-success {
+    font-size: 1rem;
+    padding: 10px;
+  }
+}
+
+    .password-requisitos {
+      font-size: 0.9rem;
+      margin-top: -4px;
+      margin-bottom: 12px;
+      color: #666;
+    }
+
+    .password-requisitos span {
+      display: block;
+      margin: 2px 0;
+    }
+
+    .password-requisitos .valido {
+      color: #198754;
+    }
+
+    .password-requisitos .invalido {
+      color: #dc3545;
+    }

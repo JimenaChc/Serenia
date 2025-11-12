@@ -7,13 +7,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  const lista = document.getElementById("listaCotizaciones");
+  lista.innerHTML = `<p style="text-align:center;">Cargando cotizaciones...</p>`;
+
   try {
     const res = await fetch(`/api/cotizaciones/usuario/${idUsuario}`);
     const cotizacionesData = await res.json();
     const cotizaciones = cotizacionesData[0] || [];
 
-    const lista = document.getElementById("listaCotizaciones");
     lista.innerHTML = "";
+
+    if (cotizaciones.length === 0) {
+      lista.innerHTML = `<p class="sin-cotizaciones">Aún no tienes cotizaciones</p>`;
+      return;
+    }
 
     cotizaciones.forEach(c => {
       const imagenes = c.Imagenes ? c.Imagenes.split(",") : [];
@@ -22,7 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       div.className = "cotizacion-card";
       div.innerHTML = `
         <div class="cotizacion-imagenes">
-          ${imagenes.map(url => `<img src="${url}" alt="imagen">`).join("")}
+          ${imagenes.map(url => `<img loading="lazy" src="${url}" alt="imagen">`).join("")}
         </div>
         <div class="cotizacion-info">
           <h3>${c.NombreProyecto}</h3>
@@ -31,13 +38,16 @@ document.addEventListener("DOMContentLoaded", async () => {
           <p class="cotizacion-estado">Estado: ${c.Estado}</p>
         </div>
       `;
-      div.addEventListener("click",()=>{
-        window.location.href =`ProgresoProyectos.html?id=${c.Id_Cotizacion}`;
+
+      div.addEventListener("click", () => {
+        window.location.href = `ProgresoProyectos.html?id=${c.Id_Cotizacion}`;
       });
+
       lista.appendChild(div);
     });
+
   } catch (error) {
     console.error(error);
-    alert("Error al cargar cotizaciones");
+    lista.innerHTML = `<p class="sin-cotizaciones">Error al cargar</p>`;
   }
 });

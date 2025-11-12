@@ -20,4 +20,19 @@ document.getElementById("btnListo").addEventListener("click", () => {
   window.location.href = "verificarFA.html"; 
 });
 
+// Copiar al portapapeles
+    document.getElementById("btnCopiar").addEventListener("click", () => {
+      const codigo = document.getElementById("codigoSecreto").textContent;
+      navigator.clipboard.writeText(codigo)
+        .then(() => mostrarMensaje("Código copiado al portapapeles"))
+        .catch(() => mostrarMensaje("No se pudo copiar el código"));
+    });
+
 activar2FA();
+
+function mostrarMensaje(texto) {
+  const mensaje = document.getElementById("mensajeFlotante");
+  mensaje.textContent = texto;
+  mensaje.classList.add("show");
+  setTimeout(() => mensaje.classList.remove("show"), 2000);
+}

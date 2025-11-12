@@ -1,5 +1,9 @@
 document.getElementById("formRecuperarCorreo")?.addEventListener("submit", async (e) => {
   e.preventDefault();
+    const btn = e.submitter;
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.textContent = "Enviando...";
   const { Correo } = Object.fromEntries(new FormData(e.target));
 
   try {
@@ -20,6 +24,8 @@ document.getElementById("formRecuperarCorreo")?.addEventListener("submit", async
   } catch (err) {
     mostrarMensaje("Error al conectar con el servidor", "error");
   }
+  btn.disabled = false;
+  btn.textContent = original;
 });
 
 function mostrarMensaje(texto, tipo = "ok") {
@@ -28,3 +34,41 @@ function mostrarMensaje(texto, tipo = "ok") {
   mensaje.classList.add("show");
   setTimeout(() => mensaje.classList.remove("show"), 2000);
 }
+
+document.getElementById("formValidarToken")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = e.submitter;
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.textContent = "Verificando...";
+  const correo = localStorage.getItem("correoRecuperacion");
+  const { Token } = Object.fromEntries(new FormData(e.target));
+
+  try {
+    const res = await fetch("/api/usuarios/verificar-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ correo, token: Token })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      mostrarMensaje("Código verificado correctamente");
+      setTimeout(() => window.location.href = "actualizarContrasena.html", 1000);
+    } else {
+      mostrarMensaje(data.error || "Código incorrecto", "error");
+    }
+  } catch (err) {
+    mostrarMensaje("Error al conectar con el servidor", "error");
+  }
+  btn.disabled = false;
+  btn.textContent = original;
+});
+
+function mostrarMensaje(texto, tipo = "ok") {
+  const mensaje = document.getElementById("mensajeFlotante");
+  mensaje.textContent = texto;
+  mensaje.classList.add("show");
+  setTimeout(() => mensaje.classList.remove("show"), 2000);
+}
+

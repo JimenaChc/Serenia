@@ -4,10 +4,10 @@ dotenv.config();
 
 //Registro
 export const crearUsuario = (usuario, callback) => {
-  const sql = `CALL RegistrarUsuario(?, ?, ?, ?, ?)`;
+  const sql = `CALL RegistrarUsuario(?, ?, ?, ?, ?,?)`;
   conexion.query(
     sql,
-    [usuario.Nombre, usuario.Apellidos, usuario.Correo, usuario.Contrasena, usuario.Telefono],
+    [usuario.Nombre, usuario.Apellidos, usuario.Correo, usuario.Contrasena, usuario.Telefono, usuario.Direccion],
     callback
   );
 };
@@ -82,5 +82,47 @@ export function obtenerSecretFA(idUsuario, callback) {
   });
 }
 
+// Actualizar contraseña 
+export function ActualizarContrasena(correo, hash, callback) {
+  const sql = `CALL ActualizarContrasena(?, ?)`;
+  conexion.query(sql, [correo,hash], (err, results) => {
+    if (err) {
+      console.error("Error al actualizar contraseña:", err);
+      return callback(err);
+    }
+    callback(null, results);
+  });
+}
+
+export function incrementarIntentos(correo, callback) {
+  const sql = `CALL IncrementarIntentos(?)`;
+  conexion.query(sql, [correo], (err, results) => {
+    if (err) {
+      console.error("Error al incrementar intentos:", err);
+      return callback(err);
+    }
+    callback(null, results);
+  });
+}
+
+export function bloquearUsuario(correo, callback) {
+  const sql = `CALL BloquearUsuario(?)`;
+  conexion.query(sql, [correo], callback);
+}
+
+export function resetearIntentos(correo, callback) {
+  const sql = `UPDATE usuarios SET IntentosFallidos = 0, Bloqueado = 'Activo' WHERE Correo = ?`;
+  conexion.query(sql, [correo], callback);
+}
+
+export function obtenerPaises(callback) {
+  const sql = "SELECT Id, Descripcion FROM ubicaciones WHERE Dependencia IS NULL";
+  conexion.query(sql, callback);
+}
+
+export function obtenerUbiPorDependencia(idPadre, callback) {
+  const sql = "SELECT Id, Descripcion FROM ubicaciones WHERE Dependencia = ?";
+  conexion.query(sql, [idPadre], callback);
+}
 
 

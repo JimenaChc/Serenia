@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Actualizar Contraseña | Serenia</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body class="auth-container">
+  <div class="completar-wrapper">
+    <h2>Nueva Contraseña</h2>
+    <form id="formActualizarContrasena">
+      <div id="requisitos" class="password-requisitos">
+        <span id="mayus" class="invalido">• Al menos una mayúscula</span>
+        <span id="minus" class="invalido">• Al menos una minúscula</span>
+        <span id="numero" class="invalido">• Al menos un número</span>
+        <span id="especial" class="invalido">• Al menos un carácter especial</span>
+      </div>
+      <div class="position-relative">
+        <input type="password" class="form-control" id="nuevaContrasena" name="NuevaContrasena" placeholder="Nueva contraseña" required>
+        <span class="ver-password" onclick="togglePassword('nuevaContrasena', this)"><i class="bi bi-eye"></i></span>
+      </div>
+
+      <div class="position-relative mt-2">
+        <input type="password" class="form-control" id="confirmarContrasena" name="ConfirmarContrasena" placeholder="Confirmar contraseña" required>
+        <span class="ver-password" onclick="togglePassword('confirmarContrasena', this)"><i class="bi bi-eye"></i></span>
+      </div>
+      
+      <button class="btn-login mt-3">Actualizar</button>
+    </form>
+    <div id="mensajeFlotante" class="mensaje-flotante"></div>
+  </div>
+  <script src="./js/actualizarContrasena.js"></script>
+  <style>
+    .ver-password {
+      position: absolute;
+      right: 10px;
+      top: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
+</body>
+</html>

@@ -5,21 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Completar registro - Serenia</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/estilos.css" rel="stylesheet">
 </head>
 <body class="auth-container">
-  <div>
-    <h2>Completa tu registro</h2>
-    <form id="formCompletar">
-      <input type="text" class="form-control" name="nombre" placeholder="Nombre" required>
-      <input type="text" class="form-control" name="apellidos" placeholder="Apellidos" required>
-      <input type="text" class="form-control" name="usuario" placeholder="Nombre de usuario" required>
-      <input type="password" class="form-control" name="contrasena" placeholder="Contraseña" required>
-      <input type="text" class="form-control" name="telefono" placeholder="Teléfono (opcional)">
-      <button class="btn btn-success mt-2">Finalizar registro</button>
-    </form>
+  <div class="completar-wrapper">
+  <h2>Completa tu registro</h2>
+  <form id="formCompletar">
+    <input type="text" class="form-control" name="nombre" placeholder="Nombre" required>
+    <input type="text" class="form-control" name="apellidos" placeholder="Apellidos" required>
+    <input type="text" class="form-control" name="usuario" placeholder="Nombre de usuario" required>
+    <select id="pais" class="form-control"></select>
+    <select id="provincia" class="form-control" disabled></select>
+    <select id="canton" class="form-control" disabled></select>
+    <select id="distrito" class="form-control" disabled></select>
+    <input type="text" class="form-control" name="telefono" placeholder="Teléfono (opcional)">
+    <input type="password" class="form-control" name="contrasena" placeholder="Contraseña" required>
+    <div id="requisitos" class="password-requisitos">
+      <span id="mayus" class="invalido">• Debe tener minimo 8 caracteres</span>
+        <span id="mayus" class="invalido">• Al menos una mayúscula</span>
+        <span id="minus" class="invalido">• Al menos una minúscula</span>
+        <span id="numero" class="invalido">• Al menos un número</span>
+        <span id="especial" class="invalido">• Al menos un carácter especial</span>
+      </div>
+    <button class="btn btn-success mt-2">Finalizar registro</button>
+  </form>
 
-    <div id="mensajeFlotante" class="mensaje-flotante"></div>
-  </div>
+  <div id="mensajeFlotante" class="mensaje-flotante"></div>
+</div>
+
 
   <script>
     const token = new URLSearchParams(window.location.search).get("token");
@@ -35,7 +48,22 @@
       e.preventDefault();
       const datos = Object.fromEntries(new FormData(e.target));
       datos.token = token;
+      // Construir la dirección completa
+     const paisSelect = document.getElementById("pais");
+const provinciaSelect = document.getElementById("provincia");
+const cantonSelect = document.getElementById("canton");
+const distritoSelect = document.getElementById("distrito");
 
+const partes = [
+  paisSelect?.selectedOptions[0]?.textContent || "",
+  provinciaSelect?.selectedOptions[0]?.textContent || "",
+  cantonSelect?.selectedOptions[0]?.textContent || "",
+  distritoSelect?.selectedOptions[0]?.textContent || ""
+].filter(Boolean);
+
+const direccion = partes.join(", ");
+datos.Direccion = direccion;
+     console.log("Datos a enviar:", datos);
       const res = await fetch("/api/verificacion/completar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -51,5 +79,80 @@
       }
     });
   </script>
+  <script>
+
+//  UBICACIONES 
+
+document.addEventListener("DOMContentLoaded", () => {
+  cargarPaises();
+
+  document.getElementById("pais").addEventListener("change", function () {
+    cargarProvincias(this.value);
+  });
+
+  document.getElementById("provincia").addEventListener("change", function () {
+    cargarCantones(this.value);
+  });
+
+  document.getElementById("canton").addEventListener("change", function () {
+    cargarDistritos(this.value);
+  });
+});
+
+async function cargarPaises() {
+  const res = await fetch("/api/usuarios/paises");
+  const data = await res.json();
+  llenarSelect("pais", data, "Seleccione un país");
+}
+
+async function cargarProvincias(idPais) {
+  if (!idPais) return;
+  const res = await fetch(`/api/usuarios/hijos/${idPais}`);
+  const data = await res.json();
+  llenarSelect("provincia", data, "Seleccione una provincia");
+  habilitar("provincia");
+  deshabilitar("canton");
+  deshabilitar("distrito");
+}
+
+async function cargarCantones(idProvincia) {
+  if (!idProvincia) return;
+  const res = await fetch(`/api/usuarios/hijos/${idProvincia}`);
+  const data = await res.json();
+  llenarSelect("canton", data, "Seleccione un cantón");
+  habilitar("canton");
+  deshabilitar("distrito");
+}
+
+async function cargarDistritos(idCanton) {
+  if (!idCanton) return;
+  const res = await fetch(`/api/usuarios/hijos/${idCanton}`);
+  const data = await res.json();
+  llenarSelect("distrito", data, "Seleccione un distrito");
+  habilitar("distrito");
+}
+
+function llenarSelect(id, datos, placeholder) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = `<option value="">${placeholder}</option>`;
+  datos.forEach(x => {
+    const op = document.createElement("option");
+    op.value = x.Id;
+    op.textContent = x.Descripcion;
+    sel.appendChild(op);
+  });
+}
+
+function habilitar(id) {
+  document.getElementById(id).disabled = false;
+}
+
+function deshabilitar(id) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = `<option value="">Seleccione una opción</option>`;
+  sel.disabled = true;
+}
+</script>
+
 </body>
 </html>

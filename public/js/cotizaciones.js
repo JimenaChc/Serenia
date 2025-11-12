@@ -29,7 +29,7 @@ fotoInput.addEventListener("change", async (e) => {
       img.style.borderRadius = "10px";
       img.style.margin = "5px";
       fotoPreview.appendChild(img);
-       imagenesSeleccionadas.push(event.target.result);
+      imagenesSeleccionadas.push(event.target.result);
     };
     reader.readAsDataURL(file);
 });
@@ -65,7 +65,7 @@ document.getElementById("formProyecto").addEventListener("submit", async (e) => 
     const data = await res.json();
     if (res.ok) {
       mostrarMensaje("Cotización creada correctamente ");
-      window.location.href = "feed.html";
+      setTimeout(() => window.location.href = "feed.html", 800);
     } else {
       mostrarMensaje("Error: " + data.error);
     }
@@ -76,53 +76,54 @@ document.getElementById("formProyecto").addEventListener("submit", async (e) => 
 });
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await cargarServicios();
-  await cargarEspacios();
+  await Promise.all([
+    cargarServicios(),
+    cargarEspacios()
+  ]);
 });
 
 async function cargarServicios() {
+  const select = document.getElementById("idServicio");
+  select.innerHTML = `<option>Cargando servicios...</option>`;
+
   try {
     const res = await fetch("/api/cotizaciones/servicios");
     const serviciosRaw = await res.json();
-
-
     const servicios = serviciosRaw[0];
 
-    console.log("Servicios procesados:", servicios); 
-
-    const select = document.getElementById("idServicio");
-    select.innerHTML = '<option value="">Seleccionar servicio</option>';
-
+    select.innerHTML = `<option value="">Seleccionar servicio</option>`;
     servicios.forEach(s => {
-      const option = document.createElement("option");
-      option.value = s.Id_Servicio;
-      option.textContent = s.Descripcion;
-      select.appendChild(option);
+      const o = document.createElement("option");
+      o.value = s.Id_Servicio;
+      o.textContent = s.Descripcion;
+      select.appendChild(o);
     });
+
   } catch (err) {
-    console.error("Error cargando servicios:", err);
+    console.error(err);
+    select.innerHTML = `<option>Error cargando servicios</option>`;
   }
 }
 
 async function cargarEspacios() {
+  const select = document.getElementById("idEspacioEvento");
+  select.innerHTML = `<option>Cargando espacios...</option>`;
+
   try {
     const res = await fetch("/api/cotizaciones/espacios");
     const espaciosRaw = await res.json();
+    const espacios = espaciosRaw[0];
 
-    const espacios = espaciosRaw[0]; 
-
-    console.log("Espacios procesados:", espacios); 
-
-    const select = document.getElementById("idEspacioEvento");
-    select.innerHTML = '<option value="">Tipo de espacio o evento</option>';
-
+    select.innerHTML = `<option value="">Tipo de espacio o evento</option>`;
     espacios.forEach(e => {
-      const option = document.createElement("option");
-      option.value = e.Id_Categoria;
-      option.textContent = e.Nombre;
-      select.appendChild(option);
+      const o = document.createElement("option");
+      o.value = e.Id_Categoria;
+      o.textContent = e.Nombre;
+      select.appendChild(o);
     });
+
   } catch (err) {
-    console.error("Error cargando espacios:", err);
+    console.error(err);
+    select.innerHTML = `<option>Error cargando espacios</option>`;
   }
 }

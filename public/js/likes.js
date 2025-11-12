@@ -17,27 +17,35 @@ async function cargarMeGusta() {
     const idUsuario = usuario?.Id_Usuario;
     if (!idUsuario) return mostrarMensaje("Usuario no encontrado");
 
+    contenedor.innerHTML = `<p class="text-center text-muted">Cargando...</p>`;
+
     const res = await fetch(`/api/imagenes/megustas?idUsuario=${idUsuario}`);
-    if (!res.ok) throw new Error(`Error: ${res.status}`);
+    if (!res.ok) throw new Error();
+
     const imagenes = await res.json();
 
-    if (!imagenes || imagenes.length === 0) {
+    if (!imagenes.length) {
       contenedor.innerHTML = "<p class='text-center text-muted'>Aún no tienes 'Me gusta'</p>";
       return;
     }
 
-    contenedor.innerHTML = ""; 
+    contenedor.innerHTML = "";
     imagenes.forEach(img => {
       const div = document.createElement("div");
       div.classList.add("feed-item");
+
       div.innerHTML = `
-        <img data-id="${img.Id_Imagen}" src="${img.Url}" alt="${img.Titulo || ''}" title="${img.Descripcion || ''}" class="imagen-feed">
+        <img loading="lazy" data-id="${img.Id_Imagen}" src="${img.Url}" 
+        alt="${img.Titulo || ''}" 
+        title="${img.Descripcion || ''}" 
+        class="imagen-feed">
       `;
+
       contenedor.appendChild(div);
     });
 
   } catch (err) {
-    console.error("Error:", err);
+    console.error(err);
     mostrarMensaje("No se pudieron cargar las imágenes");
   }
 }

@@ -1,8 +1,13 @@
-console.log("login.js cargado correctamente");
 document.getElementById("formLogin")?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  const btn = e.submitter;
+  btn.disabled = true;
+  const originalText = btn.textContent;
+  btn.textContent = "Ingresando...";
+
   const datos = Object.fromEntries(new FormData(e.target));
+  console.log(datos);
 
   try {
     const res = await fetch("/api/usuarios/login", {
@@ -13,24 +18,31 @@ document.getElementById("formLogin")?.addEventListener("submit", async (e) => {
 
     const data = await res.json();
 
-    if (res.ok) {
-      // Guardar usuario en localStorage
-      localStorage.setItem("usuario", JSON.stringify(data.usuario));
-      localStorage.setItem("idUsuario", data.usuario.Id_Usuario);
-      const necesita2FA = data.usuario?.necesitaConfigurar2FA || data.necesitaConfigurar2FA;
+if (res.ok) {
+  localStorage.setItem("usuario", JSON.stringify(data.usuario));
+  localStorage.setItem("idUsuario", data.usuario.Id_Usuario);
 
-if (necesita2FA) {
-  window.location.href = "ActivarFA.html";
+  const necesita2FA = data.usuario?.necesitaConfigurar2FA || data.necesitaConfigurar2FA;
+
+  if (necesita2FA) {
+    window.location.href = "ActivarFA.html";
+  } else {
+    window.location.href = "verificarFA.html";
+  }
 } else {
-  window.location.href = "verificarFA.html";
-}
-    console.log("Respuesta backend:", data);
-  mostrarMensajeLogin(data.error || "Error al iniciar sesión", "error");
+  if (typeof data.error === "object" && data.error.mensaje) {
+      mostrarMensajeLogin(data.error.mensaje, 4000);
+    } else {
+      mostrarMensajeLogin("Credenciales incorrectas", 4000);
     }
+}
+
   } catch (err) {
     mostrarMensajeLogin("Error de conexión con el servidor", "error");
     console.error(err);
   }
+  btn.disabled = false;
+  btn.textContent = originalText;
 });
 
 function mostrarMensajeLogin(texto, duracion = 2000) {
@@ -38,9 +50,7 @@ function mostrarMensajeLogin(texto, duracion = 2000) {
   mensaje.textContent = texto;
   mensaje.classList.add("show");
 
-  setTimeout(() => {
-    mensaje.classList.remove("show");
-  }, duracion);
+  setTimeout(() => mensaje.classList.remove("show"), duracion);
 }
 
 // Configuración opcional para cargar client_id dinámicamente desde backend

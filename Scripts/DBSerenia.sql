@@ -158,6 +158,13 @@ CREATE TABLE Auditoria (
     FOREIGN KEY (Id_Accion) REFERENCES Acciones(Id_Accion)
 );
 
+CREATE TABLE ubicaciones (
+  Id INT PRIMARY KEY AUTO_INCREMENT,
+  Descripcion VARCHAR(100) NOT NULL,
+  Dependencia INT NULL,
+  FOREIGN KEY (Dependencia) REFERENCES ubicaciones(Id)
+);
+
 
 CREATE PROCEDURE RegistrarUsuario(
     IN p_Nombre VARCHAR(50),
@@ -517,6 +524,7 @@ END $$
 
 DELIMITER ;
 INSERT INTO Acciones (Id_Accion, NombreAccion, Descripcion) VALUES
+(14, 'Actualizacion de contraseña', 'Se actualizó la contraseña');
 (1, 'Registrar Usuario', 'Un usuario se registró en la plataforma'),
 (2, 'Login Usuario', 'Un usuario inició sesión'),
 (3, 'Actualizar Datos Usuario', 'El usuario actualizó su información personal'),
@@ -535,6 +543,7 @@ INSERT INTO Acciones (Id_Accion, NombreAccion, Descripcion) VALUES
 (12, 'Registrar Detalles de Diseño', 'Se guardaron detalles de diseño'),
 
 (13, 'Actualizar Progreso Cotización', 'Se actualizó el estado del progreso de una cotización');
+(14, 'Actualizacion de contraseña', 'Se actualizó la contraseña');
 
 
 DELIMITER $$
@@ -569,7 +578,160 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+CREATE PROCEDURE AgregarImagenCotizacion(
+  IN pId_Cotizacion INT,
+  IN pUrlImagen VARCHAR(255)
+)
+BEGIN
+  INSERT INTO imagenescotizacion (Id_Cotizacion, URL)
+  VALUES (pId_Cotizacion, pUrlImagen);
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE AgregarImagenTablero(
+  IN pId_Tablero INT,
+  IN pId_Imagen INT
+)
+BEGIN
+  INSERT INTO imagenestableros (Id_Tablero,Id_Imagen)
+  VALUES (pId_Tablero, pId_Imagen);
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE ActualizarContrasena(
+  IN pCorreo VARCHAR(255),
+  IN pNuevaContrasena TEXT
+)
+BEGIN
+  DECLARE vId INT;
+
+  -- Obtener ID del usuario
+  SELECT Id_Usuario INTO vId FROM usuarios WHERE Correo = pCorreo;
+
+  -- Si el usuario existe, actualiza su contraseña
+  IF vId IS NOT NULL THEN
+    UPDATE usuarios
+    SET Contrasena = pNuevaContrasena
+    WHERE Id_Usuario = vId;
+
+    -- Registrar auditoría
+    CALL sp_RegistrarAuditoria(
+      vId,
+      14,
+      CONCAT('cambió la contraseña por recuperación')
+    );
+  END IF;
+END$$
+
+DELIMITER $$
+CREATE PROCEDURE IncrementarIntentos(IN pCorreo VARCHAR(255))
+BEGIN
+  UPDATE usuarios
+  SET IntentosFallidos = IntentosFallidos + 1
+  WHERE Correo = pCorreo;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE BloquearUsuario(IN pCorreo VARCHAR(255))
+BEGIN
+  UPDATE usuarios
+  SET Bloqueado = 'Bloqueado'
+  WHERE Correo = pCorreo;
+END$$
+DELIMITER ;
+
+
+CALL IncrementarIntentos('Tamy@gmail.com')
+select *from auditoria
+
+select *from usuarios
+Update Usuarios Set contrasena = '123' where Id_Usuario = 3;
+Update Usuarios Set contrasena = '123' where Id_Usuario = 4;
+Update Usuarios Set contrasena = '123' where Id_Usuario = 5;
+Update Usuarios Set contrasena = '123' where Id_Usuario = 6;
+Update Usuarios Set contrasena = '123' where Id_Usuario = 7;
+Update Usuarios Set contrasena = '123' where Id_Usuario = 8;
+Update Usuarios Set contrasena = '123' where Id_Usuario = 9;
+Update Usuarios Set contrasena = '123' where Id_Usuario = 10;
+Update Usuarios Set contrasena = '123' where Id_Usuario = 11;
+Update Usuarios Set contrasena = '123' where Id_Usuario = 12;
+ALTER TABLE Usuarios MODIFY Contrasena VARCHAR(100) NOT NULL;
 Select *from usuarios
+
+CALL RegistrarUsuario('Micaela', 'Stone', 'mica@example.com', '123456', '88888888', 'Costa Rica, San José, Escazú, San Rafael');
+
+
+Delete from usuarios where Id_Usuario = 13
+use serenia
+INSERT INTO ubicaciones (Id, Descripcion, Dependencia) VALUES
+-- PAISES
+(1, 'Costa Rica', NULL),
+(100, 'México', NULL),
+(200, 'Estados Unidos', NULL),
+(300, 'España', NULL),
+
+-- PROVINCIAS / ESTADOS
+(2, 'San José', 1),
+(3, 'Alajuela', 1),
+(4, 'Cartago', 1),
+
+(101, 'Ciudad de México', 100),
+(102, 'Jalisco', 100),
+
+(201, 'California', 200),
+(202, 'Texas', 200),
+
+(301, 'Madrid', 300),
+(302, 'Cataluña', 300),
+
+-- CANTONES / MUNICIPIOS / LOCALES
+(10, 'San José', 2),
+(11, 'Escazú', 2),
+(12, 'Goicoechea', 2),
+
+(110, 'Benito Juárez', 101),
+(111, 'Coyoacán', 101),
+
+(210, 'Los Angeles County', 201),
+(211, 'Orange County', 201),
+
+(310, 'Madrid', 301),
+(311, 'Barcelona', 302),
+
+-- DISTRITOS / BARRIOS
+(20, 'Carmen', 10),
+(21, 'Merced', 10),
+(22, 'Hospital', 10),
+
+(23, 'Escazú Centro', 11),
+(24, 'San Rafael', 11),
+
+(25, 'Guadalupe', 12),
+(26, 'Ipís', 12),
+
+(120, 'Del Valle', 110),
+(121, 'Nápoles', 110),
+
+(122, 'Villa de Coyoacán', 111),
+(123, 'Copilco', 111),
+
+(220, 'Los Angeles', 210),
+(221, 'Glendale', 210),
+
+(222, 'Santa Ana', 211),
+(223, 'Anaheim', 211),
+
+(320, 'Madrid Capital', 310),
+(321, 'Móstoles', 310),
+(322, 'Barcelona Capital', 311),
+(323, 'Badalona', 311);
+
+
+
 
 
 

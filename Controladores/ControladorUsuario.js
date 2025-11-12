@@ -1,13 +1,17 @@
 import { registrarUsuario, servicioObtenerGoogleClientID, loginORegistrarConGoogle,
    generarSecretoFA,validarCodigoFA, loginUsuario , servicioActualizarDatosUsuario,
    servicioActualizarFotoPerfil,servicioObtenerUsuario,
+   servicioActualizarContrasenaRecuperacion,servicioVerificarCorreoRecuperacion,servicioVerificarTokenRecuperacion,
+servicioObtenerDependencias,servicioObtenerPaises
  } from "../Servicios/ServicioUsuario.js";
 
 export async function registrar(req, res) {
-  const { Nombre, Apellidos, Correo, Contrasena, Telefono } = req.body;
-
+  const { Nombre, Apellidos, Correo, Contrasena, Telefono, Direccion } = req.body;
+  console.log(" Datos recibidos en registrarUsuario:", req.body);
+  console.log(" Valor de Direccion:", Direccion);
   try {
-    await registrarUsuario(Nombre, Apellidos, Correo, Contrasena, Telefono);
+    console.log("Datos recibidos en registrarUsuario:", req.body);
+    await registrarUsuario(Nombre, Apellidos, Correo, Contrasena, Telefono, Direccion);
     res.status(200).json({ mensaje: "Usuario registrado correctamente" });
   } catch (error) {
     console.error(error);
@@ -33,7 +37,6 @@ export async function obtenerGoogleClientID(req, res) {
 }
 
 export async function login(req, res) {
-   
   const { Correo, Contrasena } = req.body;
 
   try {
@@ -43,9 +46,14 @@ export async function login(req, res) {
       usuario,
     });
   } catch (error) {
-    res.status(401).json({ error: error.toString() });
+    if (typeof error === "object" && error !== null) {
+      return res.status(401).json({ error });
+    }
+   
+    res.status(401).json({ error: { mensaje: error?.toString() || "Credenciales incorrectas" } });
   }
 }
+
 
 export async function googleAuth(req, res) {
   const { token } = req.body;
@@ -130,6 +138,61 @@ export async function verificar2FA(req, res) {
   }
 }
 
+export async function verificarCorreo(req, res) {
+  const { correo } = req.body;
+  try {
+    const resultado = await servicioVerificarCorreoRecuperacion(correo);
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(404).json({ error });
+  }
+}
 
+// Paso 2: Verificar token
+export async function verificarTokenFA(req, res) {
+  const { correo, token } = req.body;
 
+  try {
+    // Busca primero el usuario por correo
+    const resultadoCorreo = await servicioVerificarCorreoRecuperacion(correo);
+    const { Id_Usuario } = resultadoCorreo;
 
+    const resultado = await servicioVerificarTokenRecuperacion(Id_Usuario, token);
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(401).json({ error });
+  }
+}
+
+// Paso 3: Actualizar contraseña
+export async function recuperarActualizarContrasena(req, res) {
+  const { correo, nuevaContrasena } = req.body;
+
+  try {
+    const resultado = await servicioActualizarContrasenaRecuperacion(correo, nuevaContrasena);
+    res.json(resultado);
+  } catch (error) {
+    console.error("Error en servidor:", error);
+    res.status(500).json({ error: "Error al actualizar la contraseña" });
+  }
+}
+
+export async function obtenerPaises(req, res) {
+  try {
+    const data = await servicioObtenerPaises(null);
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+}
+
+export async function obtenerUbicacionesDependencias(req, res) {
+  const { idPadre } = req.params;
+
+  try {
+    const data = await servicioObtenerDependencias(idPadre);
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+}

@@ -28,11 +28,11 @@ export async function verificarToken(req, res) {
 
 // Crear usuario definitivo después de verificar
 export async function completarRegistro(req, res) {
-  const { token, nombre, apellidos, usuario, contrasena, telefono } = req.body;
+  const { token, nombre, apellidos, usuario, contrasena, telefono,Direccion } = req.body;
 
   try {
     const correo = await validarToken(token);
-    await registrarUsuario(nombre, apellidos, correo, contrasena, telefono);
+    await registrarUsuario(nombre, apellidos, correo, contrasena, telefono,Direccion);
     await eliminarToken(token);
 
     res.status(200).json({ mensaje: "Usuario creado correctamente" });
