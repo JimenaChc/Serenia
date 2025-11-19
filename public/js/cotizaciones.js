@@ -43,6 +43,17 @@ document.getElementById("formProyecto").addEventListener("submit", async (e) => 
     mostrarMensaje("Debes iniciar sesión antes de crear una cotización");
     return;
   }
+const paisSelect = document.getElementById("pais");
+const provinciaSelect = document.getElementById("provincia");
+const cantonSelect = document.getElementById("canton");
+
+const partes = [
+  paisSelect?.selectedOptions[0]?.textContent || "",
+  provinciaSelect?.selectedOptions[0]?.textContent || "",
+  cantonSelect?.selectedOptions[0]?.textContent || "",
+].filter(Boolean);
+
+const direccion = partes.join(", ");
 
   const datos = {
     Id_Usuario: usuario.Id_Usuario,
@@ -53,6 +64,8 @@ document.getElementById("formProyecto").addEventListener("submit", async (e) => 
     MontoEstimado: document.getElementById("montoEstimado").value,
     Id_Tablero: 1,
     Imagenes: imagenesSeleccionadas,
+    Ubicacion: direccion
+    
   };
 
   try {
@@ -126,4 +139,67 @@ async function cargarEspacios() {
     console.error(err);
     select.innerHTML = `<option>Error cargando espacios</option>`;
   }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  cargarPaises();
+
+  document.getElementById("pais").addEventListener("change", function () {
+    cargarProvincias(this.value);
+  });
+
+  document.getElementById("provincia").addEventListener("change", function () {
+    cargarCantones(this.value);
+  });
+
+  document.getElementById("canton").addEventListener("change", function () {
+    cargarDistritos(this.value);
+  });
+});
+
+async function cargarPaises() {
+  const res = await fetch("/api/usuarios/paises");
+  const data = await res.json();
+  llenarSelect("pais", data, "Seleccione un país");
+}
+
+async function cargarProvincias(idPais) {
+  if (!idPais) return;
+  const res = await fetch(`/api/usuarios/hijos/${idPais}`);
+  const data = await res.json();
+  llenarSelect("provincia", data, "Seleccione una provincia");
+  habilitar("provincia");
+  deshabilitar("canton");
+  deshabilitar("distrito");
+}
+
+async function cargarCantones(idProvincia) {
+  if (!idProvincia) return;
+  const res = await fetch(`/api/usuarios/hijos/${idProvincia}`);
+  const data = await res.json();
+  llenarSelect("canton", data, "Seleccione un cantón");
+  habilitar("canton");
+  deshabilitar("distrito");
+}
+
+
+function llenarSelect(id, datos, placeholder) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = `<option value="">${placeholder}</option>`;
+  datos.forEach(x => {
+    const op = document.createElement("option");
+    op.value = x.Id;
+    op.textContent = x.Descripcion;
+    sel.appendChild(op);
+  });
+}
+
+function habilitar(id) {
+  document.getElementById(id).disabled = false;
+}
+
+function deshabilitar(id) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = `<option value="">Seleccione una opción</option>`;
+  sel.disabled = true;
 }

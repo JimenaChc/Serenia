@@ -7,6 +7,7 @@ import RutaTableros from "./Rutas/RutaTableros.js";
 import RutaCotizaciones from "./Rutas/RutaCotizaciones.js";
 import RutaUsuarios from "./Rutas/RutaUsuarios.js";
 import RutaVerificacion from "./Rutas/RutaVerificacion.js";
+import RutaPagos from "./Rutas/RutaPagos.js";
 
 dotenv.config();
 const app = express();
@@ -21,6 +22,7 @@ app.use("/api/imagenes",RutaImagenes);
 app.use("/api/tableros", RutaTableros);
 app.use("/api/cotizaciones", RutaCotizaciones);
 app.use("/api/proyectos", RutaCotizaciones);
+app.use("/api/pagos", RutaPagos);
 
 
 const PORT = 3000;

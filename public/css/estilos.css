@@ -223,11 +223,11 @@ body {
 
 .bottom-nav .center-btnactive {
   font-size: 2rem;
-  color: #0066ff;
+  color: #51b143;
 }
 
 .bottom-nav .nav-item.active {
-  color: #0066ff;
+  color: #51b143;
 }
 
 body.feed-page {
@@ -546,8 +546,8 @@ body.mockup-page {
 /* ===== Formulario de Proyecto ===== */
 .formulario-container {
   background: #fff;
-  width: 90%;
-  max-width: 420px;
+  width: 100%;
+  max-width: 500px;
   margin: 2rem auto;
   padding: 2rem 1.5rem;
   border-radius: 25px;
@@ -558,12 +558,12 @@ body.mockup-page {
 }
 
 .formulario-titulo {
-  font-family: 'Quicksand', sans-serif;
+  font-family: 'Playfair Display', serif;
   font-size: 2rem;
   color: #355c47;
   margin-bottom: 1.5rem;
   text-align: left;
-  width: 100%;
+  width: 90%;
 }
 
 /* Campos de texto */
@@ -919,8 +919,7 @@ body.mockup-page {
 /*Formulario cotización*/
     .formulario-container {
       max-width: 400px;
-      margin: 30px auto 100px;
-      padding: 20px;
+      margin: 30px auto;
       background: white;
       border-radius: 20px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -928,8 +927,8 @@ body.mockup-page {
 
     .formulario-titulo {
       text-align: center;
-      font-weight: 600;
-      margin-bottom: 15px;
+      font-weight: 400;
+      margin-bottom: 20px;
       color: #333;
     }
 

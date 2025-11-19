@@ -17,7 +17,9 @@
 
     <form id="formProyecto">
       <input type="text" id="nombreProyecto" class="form-input" placeholder="Nombre del proyecto" required>
-      <input type="text" id="ubicacion" class="form-input" placeholder="Ubicación" required>
+      <select id="pais" class="form-control"></select>
+      <select id="provincia" class="form-control" disabled></select>
+      <select id="canton" class="form-control" disabled></select>
       
       <select id="idServicio" class="form-input" required>
         <option value="">Seleccionar servicio</option>
@@ -53,9 +55,9 @@
   <div id="mensajeFlotante" class="mensaje-flotante"></div>
   <!-- Menú inferior -->
   <nav class="bottom-nav">
-    <a href="./feed.html" class="nav-item active"><i class="bi bi-house-door"></i></a>
+    <a href="./feed.html" class="nav-item"><i class="bi bi-house-door"></i></a>
     <a href="./Likes.html" class="nav-item"><i class="bi bi-suit-heart"></i></a>
-    <a href="./IniciarProyecto.html" class="nav-item center-btn"><i class="bi bi-plus-circle"></i></a>
+    <a href="./IniciarProyecto.html" class="nav-item center-btnactive"><i class="bi bi-plus-circle"></i></a>
     <a href="./Cotizaciones.html" class="nav-item"><i class="bi bi-box"></i></a>
     <a href="./Tableros.html" class="nav-item"><i class="bi bi-person"></i></a>
   </nav>

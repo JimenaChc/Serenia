@@ -4,14 +4,11 @@ dotenv.config();
 import { OAuth2Client } from "google-auth-library";
 import speakeasy from "speakeasy";
 import bcrypt from "bcrypt";
-import Encriptador from "./ServicioEncriptarDesencriptar.js";
 import { buscarPorCorreo,crearUsuario,obtenerGoogleClientID, guardarSecretFA,
    obtenerSecretFA,ObtenerUsuario,ActualizarDatosUsuario,ActualizarFotoPerfil,
  ActualizarContrasena, resetearIntentos,bloquearUsuario,incrementarIntentos,
 obtenerPaises, obtenerUbiPorDependencia } from "../Datos/DatosUsuario.js";
-
- const SALT_ROUNDS = 10;
-const encriptador = new Encriptador(process.env.ENCRYPTION_SECRET, process.env.ENCRYPTION_SALT);
+const SALT_ROUNDS = 10;
 export async function registrarUsuario(nombre, apellidos, correo, contrasena, telefono,Direccion) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -192,10 +189,8 @@ export function generarSecretoFA(idUsuario) {
     // Genera objeto completo para obtener base32 y otpauth_url
     const secretObj = speakeasy.generateSecret({ length: 20 }); 
     const secretBase32 = secretObj.base32;
-
-     const secretCifrado = encriptador.cifrar(secretBase32);
     // Guardar en la BD con la función de datos corregida
-    guardarSecretFA(idUsuario, secretCifrado, (err, result) => {
+    guardarSecretFA(idUsuario, secretBase32, (err, result) => {
       if (err) {
         console.error("Servicio -> guardarSecretFA falló:", err);
         return reject(err);
@@ -209,16 +204,9 @@ export function generarSecretoFA(idUsuario) {
 // Validar código TOTP ingresado por el usuario
 export function validarCodigoFA(idUsuario, codigo) {
   return new Promise((resolve, reject) => {
-    obtenerSecretFA(idUsuario, (err, secretoCifrado) => {
+    obtenerSecretFA(idUsuario, (err, secreto) => {
       if (err) return reject(err);
-      if (!secretoCifrado) return resolve(false);
-      let secreto;
-      try {
-        // Intentamos descifrar, si falla asumimos que ya está en claro
-        secreto = encriptador.descifrar(secretoCifrado);
-      } catch (e) {
-        secreto = secretoCifrado;
-      }
+      if (!secreto) return resolve(false);
       const isValid = speakeasy.totp.verify({
         secret: secreto,
         encoding: "base32",
@@ -260,13 +248,6 @@ export function servicioVerificarTokenFA(correo, token) {
       }
 
       let secreto = usuario.SecretFA;
-
-      try {
-        // Intentar descifrar si está cifrado
-        secreto = encriptador.descifrar(usuario.SecretFA);
-      } catch (e) {
-        console.warn("El secreto no estaba cifrado, se usa tal cual.");
-      }
 
       // Verificar el token del Google Authenticator
       const valido = speakeasy.totp.verify({
@@ -371,7 +352,7 @@ export function servicioObtenerPaises() {
 export function servicioObtenerDependencias(idPadre) {
   return new Promise((resolve, reject) => {
     obtenerUbiPorDependencia(idPadre, (err, results) => {
-      if (err) return reject("Error obteniendo ubicaciones hijas");
+      if (err) return reject("Error obteniendo ubicaciones dependientes");
       resolve(results);
     });
   });

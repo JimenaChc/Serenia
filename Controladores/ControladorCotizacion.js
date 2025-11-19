@@ -16,7 +16,7 @@ import {
 
 export async function crearCotizacion(req, res) {
   try {
-    const { Id_Usuario, Id_Servicio, NombreProyecto, Id_Espacio_Evento, Descripcion, MontoEstimado, Id_Tablero, Imagenes } = req.body;
+    const { Id_Usuario, Id_Servicio, NombreProyecto, Id_Espacio_Evento, Descripcion, MontoEstimado, Id_Tablero, Imagenes, Ubicacion} = req.body;
 
     const resultado = await registrarCotizacion(
       {
@@ -27,6 +27,7 @@ export async function crearCotizacion(req, res) {
         Descripcion,
         MontoEstimado,
         Id_Tablero,
+        Ubicacion
       },
       Imagenes || []
     );

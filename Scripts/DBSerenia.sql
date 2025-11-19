@@ -647,7 +647,7 @@ DELIMITER ;
 
 CALL IncrementarIntentos('Tamy@gmail.com')
 select *from auditoria
-
+use serenia
 select *from usuarios
 Update Usuarios Set contrasena = '123' where Id_Usuario = 3;
 Update Usuarios Set contrasena = '123' where Id_Usuario = 4;
@@ -665,7 +665,7 @@ Select *from usuarios
 CALL RegistrarUsuario('Micaela', 'Stone', 'mica@example.com', '123456', '88888888', 'Costa Rica, San José, Escazú, San Rafael');
 
 
-Delete from usuarios where Id_Usuario = 13
+Delete from usuarios where Id_Usuario = 31
 use serenia
 INSERT INTO ubicaciones (Id, Descripcion, Dependencia) VALUES
 -- PAISES

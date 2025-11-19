@@ -46,49 +46,101 @@
   </div>
 
   <!-- Modal de pago -->
-  <div class="modal fade" id="modalPago" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-bottom-sheet">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h6 class="modal-title">Realizar pago del 50%</h6>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="formPago">
-            <div class="mb-2">
-              <label class="form-label">Número de tarjeta</label>
-              <input type="text" class="form-control" name="numeroTarjeta" maxlength="16" placeholder="**** **** **** ****" required>
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Nombre del titular</label>
-              <input type="text" class="form-control" name="nombreTitular" required>
-            </div>
-            <div class="row">
-              <div class="col-6 mb-2">
-                <label class="form-label">Vencimiento</label>
-                <input type="text" class="form-control" name="vencimiento" placeholder="MM/AA" maxlength="5" required>
-              </div>
-              <div class="col-6 mb-2">
-                <label class="form-label">CVV</label>
-                <input type="password" class="form-control" name="cvv" maxlength="4" required>
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Monto a pagar</label>
-              <input type="number" class="form-control" name="Monto" id="montoPago" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Realizar pago</button>
-          </form>
-        </div>
-      </div>
+<!-- Modal: Selección de método -->
+<div class="modal fade" id="modalPago" tabindex="-1">
+  <div class="modal-dialog modal-bottom-sheet">
+    <div class="modal-content p-3">
+      <h5 class="text-center mb-3">Selecciona un método de pago</h5>
+
+      <button class="btn btn-outline-primary mb-2" data-bs-target="#modalSinpe" data-bs-toggle="modal">
+        <i class="bi bi-phone"></i> SINPE Móvil
+      </button>
+
+      <button class="btn btn-outline-primary mb-2" data-bs-target="#modalTarjeta" data-bs-toggle="modal">
+        <i class="bi bi-credit-card"></i> Tarjeta
+      </button>
+
+      <button class="btn btn-outline-primary" data-bs-target="#modalPaypal" data-bs-toggle="modal">
+        <i class="bi bi-paypal"></i> PayPal
+      </button>
     </div>
   </div>
+</div>
+<!-- Modal SINPE -->
+<div class="modal fade" id="modalSinpe" tabindex="-1">
+  <div class="modal-dialog modal-bottom-sheet">
+    <div class="modal-content p-3">
+      <h5 class="text-center mb-3">Pagar con SINPE Móvil</h5>
+
+      <form id="formSinpe">
+        <div class="mb-3">
+          <label>Número de teléfono</label>
+          <input type="text" class="form-control" name="telefonoSinpe" id="telefonoSinpe">
+        </div>
+
+        <button class="btn btn-primary" type="submit">Confirmar pago</button>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Modal TARJETA -->
+<div class="modal fade" id="modalTarjeta" tabindex="-1">
+  <div class="modal-dialog modal-bottom-sheet">
+    <div class="modal-content p-3">
+      <h5 class="text-center mb-3">Pagar con Tarjeta</h5>
+
+      <form id="formTarjeta">
+        <div class="mb-3">
+          <label>Número de tarjeta</label>
+          <input type="text" class="form-control" name="tarjetaNumero" id="tarjetaNumero" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Nombre en tarjeta</label>
+          <input type="text" class="form-control" name="tarjetaNombre" id="tarjetaNombre" required>
+        </div>
+
+        <div class="mb-3">
+          <label>CVV</label>
+          <input type="text" class="form-control" name="tarjetaCVV" id="tarjetaCVV" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Fecha vencimiento</label>
+          <input type="text" class="form-control" name="tarjetaVencimiento" id="tarjetaVencimiento" placeholder="MM/AA" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Monto</label>
+          <input type="text" class="form-control" name="Monto" id="Monto" required>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Procesar pago</button>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Modal PAYPAL -->
+<div class="modal fade" id="modalPaypal" tabindex="-1">
+  <div class="modal-dialog modal-bottom-sheet">
+    <div class="modal-content p-3">
+      <h5 class="text-center mb-3">Pagar con PayPal</h5>
+      <p class="text-center">
+        Serás redirigido a PayPal para completar tu pago.
+      </p>
+
+      <div id="paypal-button-container"></div>
+
+    </div>
+  </div>
+</div>
+
 <!-- Menú inferior -->
   <nav class="bottom-nav">
-    <a href="./feed.html" class="nav-item active"><i class="bi bi-house-door"></i></a>
+    <a href="./feed.html" class="nav-item "><i class="bi bi-house-door"></i></a>
     <a href="./Likes.html" class="nav-item"><i class="bi bi-suit-heart"></i></a>
     <a href="./IniciarProyecto.html" class="nav-item center-btn"><i class="bi bi-plus-circle"></i></a>
-    <a href="./Cotizaciones.html" class="nav-item"><i class="bi bi-box"></i></a>
+    <a href="./Cotizaciones.html" class="nav-item active"><i class="bi bi-box"></i></a>
     <a href="./Tableros.html" class="nav-item"><i class="bi bi-person"></i></a>
   </nav>
   <!-- Toast (mensaje flotante) -->
@@ -110,12 +162,13 @@
     const toastEl = document.getElementById("toastPago");
     const toast = new bootstrap.Toast(toastEl);
     const mainSection = document.getElementById("mainSection");
-
+    let montoGlobal = 0;
     async function cargarDetalle() {
       try {
         const res = await fetch(`http://localhost:3000/api/cotizaciones/detalle/${idCotizacion}`);
         const data = await res.json();
         const detalle = data[0];
+        montoGlobal = detalle.MontoEstimado ? detalle.MontoEstimado * 0.50 : 0;
 
         document.getElementById("NombreProyecto").textContent = detalle.NombreProyecto || "Proyecto sin nombre";
         document.getElementById("Estado").textContent = detalle.Estado || "Aprobada";
@@ -185,6 +238,11 @@
       document.getElementById("btnPagar").addEventListener("click", ()=> modalPago.show());
       document.getElementById("formDisenio").addEventListener("submit", guardarDetallesDisenio);
       document.getElementById("formPago")?.addEventListener("submit", enviarPago);
+
+      console.log("Monto total recibido:", detalle.MontoEstimado);
+console.log("Monto global calculado:", montoGlobal);
+
+      
     }
 
 function mostrarSeccionDesarrollo(detalle) {
@@ -346,7 +404,7 @@ function mostrarSeccionFinalizada(detalle) {
         toastEl.className = `toast align-items-center text-white ${res.ok ? "bg-success":"bg-danger"} border-0`;
         toast.show();
         modalPago.hide();
-
+        
         cargarDetalle(); // Actualiza la página al nuevo estado
       } catch(err) {
         document.getElementById("mensajeToast").textContent = "Error al conectar con el servidor";
@@ -381,6 +439,11 @@ function mostrarSeccionFinalizada(detalle) {
     // Inicial
     cargarDetalle();
     async function cargarComentarios() {
+    const cont = document.getElementById("comentariosContainer");
+       if (!cont) {
+    console.warn("No hay contenedor de comentarios en esta sección.");
+    return;
+  }
   try {
     const res = await fetch(`http://localhost:3000/api/cotizaciones/comentarios/${idCotizacion}`);
     const comentarios = await res.json();
@@ -442,6 +505,142 @@ document.getElementById("formComentario")?.addEventListener("submit", async (e) 
 cargarComentarios();
 
 
+function mostrarMensaje(texto) {
+    const msg = document.createElement("div");
+    msg.className = "mensaje-flotante show";
+    msg.innerText = texto;
+
+    document.body.appendChild(msg);
+
+    setTimeout(() => msg.remove(), 2500);
+}
   </script>
-</body>
-</html>
+  <script>
+ // --- PAGAR CON SINPE ---
+document.addEventListener("DOMContentLoaded", () => {
+  const formSinpe = document.getElementById("formSinpe");
+
+  formSinpe.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    console.log("SE EJECUTA SUBMIT SINPE");
+
+    const Telefono = document.getElementById("telefonoSinpe").value;
+
+    const body = {
+      Id_Cotizacion: idCotizacion,
+      Monto: montoGlobal,
+      Telefono
+    };
+
+    try {
+      console.log("PAYLOAD SINPE:", body);
+
+      const res = await fetch("http://localhost:3000/api/pagos/sinpe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      console.log("RESPUESTA BACKEND:", data);
+
+    if (!data.exito) {
+    mostrarMensaje(data.mensaje);
+    return;
+}
+
+      mostrarMensaje("Pago realizado correctamente");
+      bootstrap.Modal.getInstance(document.getElementById("modalSinpe"))?.hide();
+      cargarDetalle();
+
+    } catch (err) {
+      console.error("Error en SINPE:", err);
+    }
+  });
+});
+
+
+// --- PAGAR CON TARJETA ---
+document.getElementById("formTarjeta").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const body = {
+    Id_Cotizacion: idCotizacion,
+    Monto: document.getElementById("Monto").value,
+    NumTarjeta: document.getElementById("tarjetaNumero").value,
+    Nombre: document.getElementById("tarjetaNombre").value,
+    CVV: document.getElementById("tarjetaCVV").value,
+    Vencimiento: document.getElementById("tarjetaVencimiento").value
+  };
+
+  try {
+    const res = await fetch("http://localhost:3000/api/pagos/tarjeta", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    const data = await res.json();
+    console.log(data);
+
+    if (!res.ok) {
+      mostrarMensaje("Error: " + (data.mensaje || "No se pudo procesar el pago"));
+      return;
+    }
+
+    mostrarMensaje("Pago realizado correctamente!");
+    bootstrap.Modal.getInstance(document.getElementById("modalTarjeta"))?.hide();
+    cargarDetalle();
+
+  } catch (err) {
+    console.error("Error en Tarjeta:", err);
+  }
+});
+
+
+async function cargarPaypalSdk() {
+    const res = await fetch("http://localhost:3000/api/pagos/paypal/client-id");
+    const data = await res.json();
+    const clientId = data.clientId;
+
+    if (!clientId) {
+        console.error("No se encontró el Client ID en backend");
+        return;
+    }
+
+    // Crear script dinámico
+    const script = document.createElement("script");
+    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&disable-funding=card`;
+    script.onload = inicializarBotonPaypal;
+
+    document.body.appendChild(script);
+}
+
+function inicializarBotonPaypal() {
+    paypal.Buttons({
+        createOrder: async () => {
+            const response = await fetch("http://localhost:3000/api/pagos/paypal/crear-orden", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ monto: montoGlobal })
+            });
+            const order = await response.json();
+            return order.id;
+        },
+        onApprove: async (data) => {
+            const res = await fetch("http://localhost:3000/api/pagos/paypal/capturar-orden", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderId: data.orderID })
+            });
+
+            const result = await res.json();
+            alert("Pago realizado correctamente");
+            console.log(result);
+        }
+    }).render("#paypal-button-container");
+  }
+
+cargarPaypalSdk();
+</script>
