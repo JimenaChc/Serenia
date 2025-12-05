@@ -9,24 +9,39 @@
 </head>
 <body class="mockup-page">
 
-  <!-- Encabezado fijo -->
-  <header class="header-cotizaciones">
-    <h1 class="inst">Mis Cotizaciones</h1>
-  </header>
-
   <!-- Contenido principal -->
   <main class="contenedor-cotizaciones">
+    <h1 class="newHead">Proyectos</h1>
     <div id="listaCotizaciones" class="lista-cotizaciones"></div>
     <p class="sin-cotizaciones" id="mensajeVacio" style="display:none;">No tienes cotizaciones aún</p>
   </main>
   <div id="mensajeFlotante" class="mensaje-flotante"></div>
-    <nav class="bottom-nav">
-    <a href="./feed.html" class="nav-item"><i class="bi bi-house-door"></i></a>
-    <a href="./Likes.html" class="nav-item"><i class="bi bi-suit-heart"></i></a>
-    <a href="./IniciarProyecto.html" class="nav-item center-btn"><i class="bi bi-plus-circle"></i></a>
-    <a href="./Cotizaciones.html" class="nav-item active"><i class="bi bi-box"></i></a>
-    <a href="./Tableros.html" class="nav-item"><i class="bi bi-person"></i></a>
-  </nav>
+<nav class="bottom-nav">
+  <a href="./feed.html" class="nav-item active">
+    <div class="nav-icon"><i class="bi bi-house-door"></i></div>
+    <span class="nav-label">Inicio</span>
+  </a>
+
+  <a href="./Likes.html" class="nav-item">
+    <div class="nav-icon"><i class="bi bi-suit-heart"></i></div>
+    <span class="nav-label">Likes</span>
+  </a>
+
+  <a href="./IniciarProyecto.html" class="nav-item center-btn">
+    <div class="nav-icon"><i class="bi bi-plus-circle"></i></div>
+  </a>
+
+  <a href="./Cotizaciones.html" class="nav-item">
+    <div class="nav-icon"><i class="bi bi-box"></i></div>
+    <span class="nav-label">Proyectos</span>
+  </a>
+
+  <a href="./Tableros.html" class="nav-item">
+    <div class="nav-icon"><i class="bi bi-person"></i></div>
+    <span class="nav-label">Perfil</span>
+  </a>
+</nav>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="./js/ListaCotizaciones.js"></script>
 </body>

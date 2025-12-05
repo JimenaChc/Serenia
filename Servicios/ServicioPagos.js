@@ -70,9 +70,8 @@ export function pagarConTarjeta({ Id_Cotizacion, Monto, NumTarjeta, Nombre, CVV,
       return cb(null, { exito: false, mensaje: "Tarjeta no encontrada" });
     }
     const tarjeta = tarjetas[0];
-    // validaciones (simples)
+    // validaciones
     if ((tarjeta.CodigoSeguridad || tarjeta.CVV) && String(tarjeta.CodigoSeguridad) !== String(CVV)) {
-      // algunos esquemas guardan CVV en CodigoSeguridad
       return cb(null, { exito: false, mensaje: "CVV incorrecto" });
     }
     if (tarjeta.Nombre && tarjeta.Nombre !== Nombre) {

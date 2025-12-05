@@ -13,21 +13,13 @@
 <body>
 
   <div class="container py-4">
-    <div id="carouselInterior" class="carousel slide category-carousel" data-bs-ride="carousel">
+    <h1 class="newHead">Inicio</h1>
+    <div id="carouselInterior" class="carousel slide category-carousel-inicio category-carousel" data-bs-ride="carousel">
     <a href="./FormularioCotizacion.html">
     <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063150/a1c3ff32-6c19-4125-be51-b3930a6ff200_tyesf6.jpg" alt="Interior">
-        <div class="category-text">Encuentra inspiración para tu próximo proyecto</div>
-      </div>
-      <div class="carousel-item ">
-        <img src="https://res.cloudinary.com/dyxi3knlx/image/upload/v1760329301/a6d88c29-fc37-4ba0-b795-59ad97b114a2_li39le.jpg " alt="Interior 2">
-        <div class="category-text">Crea espacios que reflejen tu esencia</div>
-      </div>
-      <div class="carousel-item">
-        <img src="https://res.cloudinary.com/dyxi3knlx/image/upload/v1760329301/a6d88c29-fc37-4ba0-b795-59ad97b114a2_li39le.jpg " alt="Interior 2">
+        <img src="https://res.cloudinary.com/dyxi3knlx/image/upload/v1760063146/ca9449e8-f942-44ff-b56a-10e9f896f869_qs9nl8.jpg" alt="Interior 2">
         <div class="category-text">Te acompañamos desde la inspiración hasta el diseño final</div>
-      </div>
+
     </div>
     <div class="carousel-indicators">
       <button type="button" data-bs-target="#carouselInterior" data-bs-slide-to="0" class=""></button>
@@ -35,6 +27,22 @@
     </div>
     </a>
   </div>
+<!-- Botones de catálogos -->
+ <h1 class="newHead">Catalogos</h1>
+<div class="catalogo-buttons mt-3 d-flex gap-3 overflow-auto pb-2">
+  <button class="btn btn-catalogo" id="btnMuebles">
+   <i class="bi bi-box-seam"></i> Muebles
+  </button>
+
+  <button class="btn btn-catalogo" id="btnLamparas">
+   <i class="bi bi-lightbulb"></i> Lámparas
+  </button>
+
+  <button class="btn btn-catalogo" id="btnDisenadores">
+   <i class="bi bi-people"></i> Diseñadores
+  </button>
+</div>
+<h1 class="newHead">Inspiración</h1>
     <div id="feed" class="feed"></div>
   </div>
 
@@ -80,17 +88,38 @@
     <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Feed JS -->
-  <script src="./js/feed.js"></script>
+  <script src="./js/feed.js" defer></script>
+  <script src="./js/catalogos.js" defer></script>
 
 </body>
 
   <!-- Menú inferior -->
-  <nav class="bottom-nav">
-    <a href="./feed.html" class="nav-item active"><i class="bi bi-house-door"></i></a>
-    <a href="./Likes.html" class="nav-item"><i class="bi bi-suit-heart"></i></a>
-    <a href="./IniciarProyecto.html" class="nav-item center-btn"><i class="bi bi-plus-circle"></i></a>
-    <a href="./Cotizaciones.html" class="nav-item"><i class="bi bi-box"></i></a>
-    <a href="./Tableros.html" class="nav-item"><i class="bi bi-person"></i></a>
-  </nav>
+<nav class="bottom-nav">
+  <a href="./feed.html" class="nav-item active">
+    <div class="nav-icon"><i class="bi bi-house-door"></i></div>
+    <span class="nav-label">Inicio</span>
+  </a>
+
+  <a href="./Likes.html" class="nav-item">
+    <div class="nav-icon"><i class="bi bi-suit-heart"></i></div>
+    <span class="nav-label">Likes</span>
+  </a>
+
+  <a href="./IniciarProyecto.html" class="nav-item center-btn">
+    <div class="nav-icon"><i class="bi bi-plus-circle"></i></div>
+    <span class="nav-label">Crear</span>
+  </a>
+
+  <a href="./Cotizaciones.html" class="nav-item">
+    <div class="nav-icon"><i class="bi bi-box"></i></div>
+    <span class="nav-label">Proyectos</span>
+  </a>
+
+  <a href="./Tableros.html" class="nav-item">
+    <div class="nav-icon"><i class="bi bi-person"></i></div>
+    <span class="nav-label">Perfil</span>
+  </a>
+</nav>
+
 
 </html>

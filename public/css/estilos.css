@@ -1,10 +1,20 @@
-*{
-  font-family: 'Quicksand', sans-serif;
-}
 
+:root{
+  --green-900: #1A5E46;   /* texto principal / header */
+  --green-700: #2E6F56;   /* botones secundarios / acentos */
+  --green-400: #A2D2A0;   /* acento suave / backgrounds */
+  --bg-soft:   #F5F7F4;   /* fondo general */
+  --text-dark: #1F2A28;   /* texto oscuro neutro */
+  --text-mid:  #4A4A4A;   /* subtítulos / labels */
+  --muted:     #7A7A7A;   /* microcopy */
+  --white:     #FFFFFF;
+  --radius:    12px;
+  --base-font: 16px;
+}
+html { font-size: var(--base-font); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
 body {
-  font-family: 'Quicksand', sans-serif;
-  background: linear-gradient(180deg, #f5f2ef 0%, #e5ece4 100%);
+  color:var(--text-dark); 
+  background:var(--bg-soft); 
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -12,6 +22,20 @@ body {
   padding: 0;
   margin: 0;
 }
+
+.newHead {
+  font-size: 1.75rem;         /* 28px */
+  line-height: 1.05;
+  font-weight: 700;           /* bold / semibold */
+  color: var(--green-900);
+  margin: 1rem 0 0.25rem 0;   /* top spacing for aire */
+  letter-spacing: -0.01em;
+  text-align: left;
+  padding-bottom: 15px;
+  padding-left: 15px;
+  font-family: 'Poppins',sans-serif;
+}
+
 
 .inst{
   font-family: 'Playfair Display', serif;
@@ -135,7 +159,6 @@ body {
   justify-content: center;
   align-items: center;
   position: relative;
-  font-family: 'Quicksand', sans-serif;
 }
 
 
@@ -198,7 +221,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  height: 80px;
   background-color: #fff;
   border-top: 1px solid #ddd;
   display: flex;
@@ -209,16 +232,27 @@ body {
 
 /* Botones del menú */
 .bottom-nav .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
   color: #555;
-  font-size: 1.5rem;
   text-decoration: none;
-  transition: color 0.2s;
 }
 
 
 .bottom-nav .center-btn {
   font-size: 2rem;
   color: #555;
+}
+.nav-label {
+  font-size: 0.7rem;
+  margin-top: 2px;
+  color: #777;
+}
+.bottom-nav .nav-item.active .nav-label {
+  color: #51b143; /* tu verde principal */
 }
 
 .bottom-nav .center-btnactive {
@@ -239,6 +273,7 @@ body.feed-page {
 .feed {
       column-count: 2;
       column-gap: 1rem;
+      margin-top: 1rem;
     }
     .feed img {
       width: 100%;
@@ -435,7 +470,7 @@ body {
 /* ===== Diseño general del mockup ===== */
 body.mockup-page {
   background: linear-gradient(180deg, #f5f2ef 0%, #e5ece4 100%);
-  display: flex;
+  display: block;
   flex-direction: column;
   align-items: center;
   padding: 1.5rem 0 5rem; /* deja espacio al menú inferior */
@@ -455,9 +490,20 @@ body.mockup-page {
   position: relative;
   border-radius: 15px;
   overflow: hidden;
-  margin: 0 auto 2rem;
+  margin: 2rem auto 2rem;
+  width: 90%;
+  max-width: 90%;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.category-carousel-inicio {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  margin: 1rem auto;
   width: 100%;
-  max-width: 420px;
+  max-width: 100%;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   background-color: #fff;
 }
@@ -895,7 +941,7 @@ body.mockup-page {
 
 /* Botón My Activity */
 .btn-actividad {
-  background-color: #0066ff;
+  background-color: var(--green-900);
   color: #fff;
   font-weight: 500;
   border: none;
@@ -1295,3 +1341,122 @@ body.mockup-page {
     .password-requisitos .invalido {
       color: #dc3545;
     }
+
+
+.btn-catalogo {
+  background: #ffffff;
+  border: 1px solid #dcdcdc;
+  border-radius: 25px;
+  padding: 14px 16px;
+  font-size: 14px;
+  display: space-between ;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.08);
+}
+
+.btn-catalogo i {
+  font-size: 16px;
+  color: #64838d;
+}
+
+.item-catalogo {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.07);
+  padding: 10px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.item-catalogo img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.item-catalogo h6 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.item-catalogo p {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+/* Contenedor de diseñadores */
+.feed.disenadores {
+  display: grid;
+  grid-template-columns: 1fr; /* móvil first */
+  gap: 1rem;
+  padding: 0.5rem;
+}
+
+/* Tablet */
+@media (min-width: 576px) {
+  .feed.disenadores {
+    grid-template-columns: 1fr 1fr; /* 2 columnas */
+  }
+}
+
+/* Pantallas medianas */
+@media (min-width: 768px) {
+  .feed.disenadores {
+    grid-template-columns: 1fr 1fr 1fr; /* 3 columnas */
+  }
+}
+
+/* Pantallas grandes */
+@media (min-width: 1200px) {
+  .feed.disenadores {
+    grid-template-columns: 1fr 1fr 1fr 1fr; /* 4 columnas */
+  }
+}
+
+.card-disenador {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+}
+
+.card-disenador:hover {
+  transform: translateY(-3px);
+}
+
+.card-disenador img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.card-disenador .card-body {
+  padding: 0.5rem 0.75rem;
+}
+
+.card-disenador .card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.card-disenador .card-text {
+  font-size: 0.875rem;
+  color: #555;
+  margin-bottom: 0.25rem;
+}
+
+.saludo{
+  text-align: center;
+  padding-left: 15px;
+}
+

@@ -1,4 +1,4 @@
-// Controladores/pagosController.js
+
 import {
   pagarConSinpe,
   pagarConTarjeta ,
@@ -8,7 +8,6 @@ import {
 } from "../Servicios/ServicioPagos.js";
 
 export function pagarConSinpeController(req, res) {
-   console.log("BODY RECIBIDO EN EL BACK:", req.body);
 console.log("TIPOS:", {
   Id_Cotizacion: typeof req.body.Id_Cotizacion,
   Monto: typeof req.body.Monto,

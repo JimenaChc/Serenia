@@ -21,9 +21,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       lista.innerHTML = `<p class="sin-cotizaciones">Aún no tienes cotizaciones</p>`;
       return;
     }
-
+    const tipoCambio = await cargarTipoCambio();
+   
     cotizaciones.forEach(c => {
       const imagenes = c.Imagenes ? c.Imagenes.split(",") : [];
+      const montoColones = c.MontoEstimado;
+      const montoDolares = tipoCambio 
+      ? (montoColones / tipoCambio).toFixed(2)
+      : "N/A";
+
 
       const div = document.createElement("div");
       div.className = "cotizacion-card";
@@ -34,7 +40,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         <div class="cotizacion-info">
           <h3>${c.NombreProyecto}</h3>
           <p>${c.Descripcion}</p>
-          <p><strong>Monto:</strong> ₡${c.MontoEstimado}</p>
+          <p><strong>Monto en colones:</strong> ₡${c.MontoEstimado}</p>
+          <p><strong>Monto en dolares:</strong> $${montoDolares} </p>
           <p class="cotizacion-estado">Estado: ${c.Estado}</p>
         </div>
       `;
@@ -51,3 +58,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     lista.innerHTML = `<p class="sin-cotizaciones">Error al cargar</p>`;
   }
 });
+
+async function cargarTipoCambio() {
+  try {
+    const response = await fetch("http://localhost:3000/api/tipoCambio");
+    const data = await response.json();
+    return data.tipoCambio;
+  } catch (error) {
+    console.error("Error cargando TC:", error);
+    return null;
+  }
+}
+

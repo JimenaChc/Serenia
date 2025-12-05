@@ -16,6 +16,7 @@
     <a href="./Perfil.html">
     <img src="./img/person_placeholder.jpg" alt="Perfil" class="perfil-mini">
     </a>
+    <h2 class="saludo">Hola! Tamy </h2>
   </div>
   <button class="btn-actividad" id="btnCerrar">Cerrar sesión</button>
 </header>
@@ -24,7 +25,7 @@
 
   <!-- Pantalla de tableros -->
   <div id="pantallaTableros" class="container py-3">
-    <h2 class="text-center mb-3 inst">Mis Tableros</h2>
+    <h2 class="newHead">Mis Tableros</h2>
     <div id="contenedorTablerosGrid"></div>
   </div>
 
@@ -41,13 +42,32 @@
   <script src="./js/tableros.js"></script>
 
   <!-- Menú inferior tipo app móvil -->
-  <nav class="bottom-nav fixed-bottom bg-light border-top d-flex justify-content-around py-2">
-    <a href="./feed.html" class="nav-item"><i class="bi bi-house-door"></i></a>
-    <a href="./Likes.html" class="nav-item"><i class="bi bi-suit-heart"></i></a>
-    <a href="./IniciarProyecto.html" class="nav-item center-btn"><i class="bi bi-plus-circle"></i></a>
-    <a href="./Cotizaciones.html" class="nav-item"><i class="bi bi-box"></i></a>
-    <a href="./Tableros.html" class="nav-item active"><i class="bi bi-person"></i></a>
-  </nav>
+<nav class="bottom-nav">
+  <a href="./feed.html" class="nav-item active">
+    <div class="nav-icon"><i class="bi bi-house-door"></i></div>
+    <span class="nav-label">Inicio</span>
+  </a>
+
+  <a href="./Likes.html" class="nav-item">
+    <div class="nav-icon"><i class="bi bi-suit-heart"></i></div>
+    <span class="nav-label">Likes</span>
+  </a>
+
+  <a href="./IniciarProyecto.html" class="nav-item center-btn">
+    <div class="nav-icon"><i class="bi bi-plus-circle"></i></div>
+  </a>
+
+  <a href="./Cotizaciones.html" class="nav-item">
+    <div class="nav-icon"><i class="bi bi-box"></i></div>
+    <span class="nav-label">Proyectos</span>
+  </a>
+
+  <a href="./Tableros.html" class="nav-item">
+    <div class="nav-icon"><i class="bi bi-person"></i></div>
+    <span class="nav-label">Perfil</span>
+  </a>
+</nav>
+
 
 </body>
 </html>

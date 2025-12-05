@@ -11,6 +11,38 @@ Telefono VARCHAR(15),
 FotoPerfil TEXT
 );
 
+
+CREATE TABLE Tarjetas (
+  NumTarjeta VARCHAR(20) NOT NULL UNIQUE,  
+  Nombre VARCHAR(100),
+  Telefono VARCHAR(15),
+  CodigoSeguridad INT,
+  Vencimiento CHAR(5),   -- formato MM/AA
+  Saldo DECIMAL(10,2),
+  PRIMARY KEY (NumTarjeta)
+);
+
+CREATE TABLE PagosTransacciones (
+  IdPago INT AUTO_INCREMENT PRIMARY KEY,
+  Id_Cotizacion INT NULL,
+  Monto DECIMAL(10,2) NOT NULL,
+  MetodoPago VARCHAR(20) NOT NULL, -- 'SIMP','TARJETA','PAYPAL'
+  Estado VARCHAR(20) NOT NULL,     -- 'Pendiente','Completado','Fallido'
+  Comprobante VARCHAR(100) NULL,    -- número/uuid de comprobante visible al usuario
+  PayPalOrderId VARCHAR(100) NULL,  -- para PayPal real
+  FechaRegistro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE PayPalOrders (
+  Id INT AUTO_INCREMENT PRIMARY KEY,
+  OrderId VARCHAR(100) NOT NULL UNIQUE,
+  IdPago INT NULL,
+  Monto DECIMAL(10,2),
+  Estado VARCHAR(50),
+  Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (IdPago) REFERENCES PagosTransacciones(IdPago) ON DELETE SET NULL
+);
+
 CREATE TABLE Tableros (
 Id_Tablero INT PRIMARY KEY AUTO_INCREMENT,
 Id_Usuario INT NOT NULL,
@@ -19,6 +51,8 @@ Descripcion VARCHAR(50),
 FechaCreación DATE,
 FOREIGN KEY (Id_Usuario) REFERENCES Usuarios(Id_Usuario) 
 );
+
+CREATE INDEX idx_tarjetas_telefono ON Tarjetas (Telefono);
 
 CREATE TABLE Imagenes (
 Id_Imagen INT PRIMARY KEY AUTO_INCREMENT,
@@ -646,9 +680,9 @@ DELIMITER ;
 
 
 CALL IncrementarIntentos('Tamy@gmail.com')
-select *from auditoria
+select *from pagoscotizaciones
 use serenia
-select *from usuarios
+select *from cotizaciones
 Update Usuarios Set contrasena = '123' where Id_Usuario = 3;
 Update Usuarios Set contrasena = '123' where Id_Usuario = 4;
 Update Usuarios Set contrasena = '123' where Id_Usuario = 5;
@@ -664,72 +698,68 @@ Select *from usuarios
 
 CALL RegistrarUsuario('Micaela', 'Stone', 'mica@example.com', '123456', '88888888', 'Costa Rica, San José, Escazú, San Rafael');
 
+DELIMITER $$
+CREATE PROCEDURE descontarSaldo(
+  IN pNumTarjeta VARCHAR(20),
+  IN pMonto DECIMAL(10,2),
+  OUT pResultado VARCHAR(50)
+)
+proc_label: BEGIN   -- <<< ESTA ES LA ETIQUETA CORRECTA
+  DECLARE vSaldo DECIMAL(10,2);
+  DECLARE vNewSaldo DECIMAL(10,2);
 
-Delete from usuarios where Id_Usuario = 31
-use serenia
-INSERT INTO ubicaciones (Id, Descripcion, Dependencia) VALUES
--- PAISES
-(1, 'Costa Rica', NULL),
-(100, 'México', NULL),
-(200, 'Estados Unidos', NULL),
-(300, 'España', NULL),
+  START TRANSACTION;
 
--- PROVINCIAS / ESTADOS
-(2, 'San José', 1),
-(3, 'Alajuela', 1),
-(4, 'Cartago', 1),
+  -- Bloqueo de la fila para evitar problemas de concurrencia
+  SELECT Saldo 
+  INTO vSaldo 
+  FROM Tarjetas 
+  WHERE NumTarjeta = pNumTarjeta 
+  FOR UPDATE;
 
-(101, 'Ciudad de México', 100),
-(102, 'Jalisco', 100),
+  -- No existe
+  IF vSaldo IS NULL THEN
+    SET pResultado = 'NO_EXISTE';
+    ROLLBACK;
+    LEAVE proc_label;   -- <<< AHORA FUNCIONA
+  END IF;
 
-(201, 'California', 200),
-(202, 'Texas', 200),
+  -- No alcanza el saldo
+  IF vSaldo < pMonto THEN
+    SET pResultado = 'SALDO_INSUFICIENTE';
+    ROLLBACK;
+    LEAVE proc_label;
+  END IF;
 
-(301, 'Madrid', 300),
-(302, 'Cataluña', 300),
+  -- Descontar
+  SET vNewSaldo = vSaldo - pMonto;
 
--- CANTONES / MUNICIPIOS / LOCALES
-(10, 'San José', 2),
-(11, 'Escazú', 2),
-(12, 'Goicoechea', 2),
+  UPDATE Tarjetas 
+  SET Saldo = vNewSaldo 
+  WHERE NumTarjeta = pNumTarjeta;
 
-(110, 'Benito Juárez', 101),
-(111, 'Coyoacán', 101),
+  COMMIT;
+  SET pResultado = 'OK';
 
-(210, 'Los Angeles County', 201),
-(211, 'Orange County', 201),
+END $$
+DELIMITER ;
 
-(310, 'Madrid', 301),
-(311, 'Barcelona', 302),
+DROP PROCEDURE IF EXISTS descontarSaldo;
 
--- DISTRITOS / BARRIOS
-(20, 'Carmen', 10),
-(21, 'Merced', 10),
-(22, 'Hospital', 10),
 
-(23, 'Escazú Centro', 11),
-(24, 'San Rafael', 11),
-
-(25, 'Guadalupe', 12),
-(26, 'Ipís', 12),
-
-(120, 'Del Valle', 110),
-(121, 'Nápoles', 110),
-
-(122, 'Villa de Coyoacán', 111),
-(123, 'Copilco', 111),
-
-(220, 'Los Angeles', 210),
-(221, 'Glendale', 210),
-
-(222, 'Santa Ana', 211),
-(223, 'Anaheim', 211),
-
-(320, 'Madrid Capital', 310),
-(321, 'Móstoles', 310),
-(322, 'Barcelona Capital', 311),
-(323, 'Badalona', 311);
-
+Select *from cotizaciones
+INSERT INTO Tarjetas (NumTarjeta, Nombre, Telefono, CodigoSeguridad, Vencimiento, Saldo)
+VALUES
+('4213 5589 7744 1201', 'Andrea Solís Vargas', '88881122', '314', '04/27', 45300),
+('5320 9913 4478 2245', 'Carlos Méndez Rojas', '71129044', '802', '11/26', 32000),
+('4485 2201 5634 9810', 'Jimena Chacón', '85330021', '129', '08/28', 12750),
+('6011 7745 9981 3340', 'Luis Herrera Castro', '70015620', '443', '02/30', 8900),
+('4539 8821 1200 6672', 'María Fernanda López', '87449912', '557', '07/27', 102500),
+('4788 2201 9900 3312', 'Rafael Araya Murillo', '88776601', '238', '05/29', 21500),
+('5367 1188 4422 5009', 'Daniela Mora Céspedes', '87339001', '901', '12/26', 50300),
+('4481 9920 1044 7822', 'Sofía Arrieta Ramírez', '88912210', '774', '09/29', 15800),
+('6011 7788 3341 1012', 'Jorge Salazar Muñoz', '70129933', '623', '01/30', 9200),
+('4532 5500 6644 7811', 'Valeria González Soto', '83504421', '506', '06/27', 76400);
 
 
 
