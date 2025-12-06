@@ -10,7 +10,7 @@ document.getElementById("formLogin")?.addEventListener("submit", async (e) => {
   console.log(datos);
 
   try {
-    const res = await fetch("https://serenia.onrender.com/api/usuarios/login", {
+    const res = await fetch("/api/usuarios/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datos),
@@ -56,7 +56,7 @@ function mostrarMensajeLogin(texto, duracion = 2000) {
 // Configuración opcional para cargar client_id dinámicamente desde backend
 async function configurarGoogleSignIn() {
   try {
-    const res = await fetch("https://serenia.onrender.com/api/usuarios/google-client-id");
+    const res = await fetch("/api/usuarios/google-client-id");
     const { clientId } = await res.json();
     if (!clientId) throw new Error("Client ID no recibido");
 
@@ -99,7 +99,7 @@ async function handleCredentialResponse(response) {
   const token = response.credential;
 
   try {
-    const res = await fetch("https://serenia.onrender.com/api/usuarios/google-auth", {
+    const res = await fetch("/api/usuarios/google-auth", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
