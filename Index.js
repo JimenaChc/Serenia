@@ -15,6 +15,10 @@ const app = express();
 app.use(cors());
 app.use(express.static("Public")); 
 
+app.get("/", (req, res) => {
+  res.sendFile("Login.html", { root: "Public" });
+});
+
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use("/api/usuarios", RutaUsuarios);
