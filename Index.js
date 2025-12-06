@@ -13,7 +13,7 @@ import RutaCambio from "./Rutas/RutaCambio.js"
 dotenv.config();
 const app = express();
 app.use(cors());
-app.use(express.static("Public")); 
+app.use(express.static("public")); 
 
 app.get("/", (req, res) => {
   res.sendFile("Login.html", { root: "public" });
