@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.static("Public")); 
 
 app.get("/", (req, res) => {
-  res.sendFile("Login.html", { root: "Public" });
+  res.sendFile("Login.html", { root: "public" });
 });
 
 app.use(express.json({ limit: "50mb" }));
