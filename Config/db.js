@@ -1,10 +1,15 @@
 import mysql from "mysql2";
 
 const conexion = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "Serenia",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+  ssl: {
+    rejectUnauthorized: false
+  },
+  allowPublicKeyRetrieval: true,
 });
 
 conexion.connect((err) => {
