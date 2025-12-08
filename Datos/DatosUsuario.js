@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 //Registro
-export const crearUsuario = (usuario, callback) => {
+export async function crearUsuario = (usuario, callback) => {
   const sql = `CALL RegistrarUsuario(?, ?, ?, ?, ?,?)`;
   const result = await conexion.query(
     sql,
@@ -14,7 +14,7 @@ export const crearUsuario = (usuario, callback) => {
 
 
 //El login
-export function buscarPorCorreo(correo, callback){
+export async function buscarPorCorreo(correo, callback){
    const sql = `CALL LoginUsuario(?)`;
    const result = await conexion.query(sql, [correo], (err, resultado) => {
     if (err) return callback(err, null);
@@ -30,7 +30,7 @@ export function obtenerGoogleClientID() {
 
 
 // Obtener un usuario por ID
-export function ObtenerUsuario(idUsuario, callback) {
+export async function ObtenerUsuario(idUsuario, callback) {
   const sql = `CALL ObtenerUsuario(?)`;
   const result = await conexion.query(sql, [idUsuario], (err, results) => {
     if (err) return callback(err);
