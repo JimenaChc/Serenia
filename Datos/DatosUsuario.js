@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 //Registro
-export async function crearUsuario = (usuario, callback) => {
+export async function crearUsuario(usuario){
   const sql = `CALL RegistrarUsuario(?, ?, ?, ?, ?,?)`;
   const result = await conexion.query(
     sql,
@@ -14,15 +14,11 @@ export async function crearUsuario = (usuario, callback) => {
 
 
 //El login
-export async function buscarPorCorreo(correo, callback){
+export async function buscarPorCorreo(correo){
    const sql = `CALL LoginUsuario(?)`;
-   const result = await conexion.query(sql, [correo], (err, resultado) => {
-    if (err) return callback(err, null);
-     const usuario = resultado[0][0]; 
-    callback(null, usuario);
-  });
-};
-
+   const result = await conexion.query(sql, [correo]);
+  return result?.[0]?.[0] || null;
+}
 //Client ID Google 
 export function obtenerGoogleClientID() {
   return process.env.GOOGLE_CLIENT_ID;
@@ -30,12 +26,10 @@ export function obtenerGoogleClientID() {
 
 
 // Obtener un usuario por ID
-export async function ObtenerUsuario(idUsuario, callback) {
+export async function ObtenerUsuario(idUsuario) {
   const sql = `CALL ObtenerUsuario(?)`;
-  const result = await conexion.query(sql, [idUsuario], (err, results) => {
-    if (err) return callback(err);
-    callback(null, results[0]);
-  });
+  const result = await conexion.query(sql, [idUsuario]);
+  return result[0];
 }
 
 // Actualizar datos generales del usuario
