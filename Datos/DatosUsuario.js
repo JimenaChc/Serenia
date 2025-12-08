@@ -5,7 +5,7 @@ dotenv.config();
 //Registro
 export const crearUsuario = (usuario, callback) => {
   const sql = `CALL RegistrarUsuario(?, ?, ?, ?, ?,?)`;
-  conexion.query(
+  const result = await conexion.query(
     sql,
     [usuario.Nombre, usuario.Apellidos, usuario.Correo, usuario.Contrasena, usuario.Telefono, usuario.Direccion],
     callback
@@ -16,7 +16,7 @@ export const crearUsuario = (usuario, callback) => {
 //El login
 export function buscarPorCorreo(correo, callback){
    const sql = `CALL LoginUsuario(?)`;
-   conexion.query(sql, [correo], (err, resultado) => {
+   const result = await conexion.query(sql, [correo], (err, resultado) => {
     if (err) return callback(err, null);
      const usuario = resultado[0][0]; 
     callback(null, usuario);
@@ -32,7 +32,7 @@ export function obtenerGoogleClientID() {
 // Obtener un usuario por ID
 export function ObtenerUsuario(idUsuario, callback) {
   const sql = `CALL ObtenerUsuario(?)`;
-  conexion.query(sql, [idUsuario], (err, results) => {
+  const result = await conexion.query(sql, [idUsuario], (err, results) => {
     if (err) return callback(err);
     callback(null, results[0]);
   });
