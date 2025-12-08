@@ -14,10 +14,17 @@ export async function crearUsuario(usuario){
 
 
 //El login
-export async function buscarPorCorreo(correo) {
+export function buscarPorCorreo(correo, callback) {
   const sql = `CALL LoginUsuario(?)`;
-  const [rows] = await conexion.query(sql, [correo]);
-  return rows?.[0]?.[0] || null;
+
+  conexion.query(sql, [correo])
+    .then(rows => {
+      const usuario = rows?.[0]?.[0] || null;
+      callback(null, usuario);
+    })
+    .catch(err => {
+      callback(err, null);
+    });
 }
 //Client ID Google 
 export function obtenerGoogleClientID() {
