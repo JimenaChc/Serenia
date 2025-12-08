@@ -17,7 +17,8 @@ const conexion = {
   query: async (sql, params) => {
     const [rows] = await pool.query(sql, params);
     return rows;
-  },
+  }
+};
 
 conexion.connect((err) => {
   if (err) {
