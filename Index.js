@@ -32,8 +32,8 @@ app.use("/api/tipocambio", RutaCambio);
 
 
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en ${PORT}`);
   console.log("GOOGLE_CLIENT_ID desde .env:", process.env.GOOGLE_CLIENT_ID);
 });
