@@ -17,7 +17,7 @@ async function activar2FA() {
 }
 
 document.getElementById("btnListo").addEventListener("click", () => {
-  window.location.href = "verificarFA.html"; 
+  window.location.href = "/verificarFA.html"; 
 });
 
 // Copiar al portapapeles
