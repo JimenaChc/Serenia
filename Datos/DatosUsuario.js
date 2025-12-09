@@ -127,8 +127,8 @@ export async function bloquearUsuario(correo) {
 export async function resetearIntentos(correo) {
   try {
     const sql = `UPDATE usuarios SET IntentosFallidos = 0, Bloqueado = 'Activo' WHERE Correo = ?`;
-    const [result] = await conexion.query(sql, [correo]);
-    return result;
+    const result = await conexion.query(sql, [correo]);
+    return Array.isArray(result) ? result[0] : result;
   } catch (err) {
     console.error("Error resetearIntentos:", err);
     throw err;
