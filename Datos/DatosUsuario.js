@@ -68,8 +68,9 @@ export function ActualizarFotoPerfil(idUsuario, urlFoto, callback) {
 export async function guardarSecretFA(idUsuario, secret) {
   try {
     const sql = `CALL guardarSecretFA(?,?)`;
-    const [result] = await conexion.query(sql, [idUsuario, secret]);
-    return result;
+    const result = await conexion.query(sql, [idUsuario, secret]);
+    const rows = Array.isArray(result) ? result[0] : result;
+    return rows;
   } catch (err) {
     console.error("Error guardarSecretFA:", err);
     throw err;
