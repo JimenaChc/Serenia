@@ -2,7 +2,7 @@
   "name": "Serenia",
   "short_name": "Serenia",
   "description": "",
-  "start_url": "/public/Login.html",
+  "start_url": "/Login.html",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
