@@ -80,8 +80,8 @@ export async function guardarSecretFA(idUsuario, secret) {
 export async function obtenerSecretFA(idUsuario) {
   try {
     const sql = `CALL validarSecretFA(?)`;
-    const [result] = await conexion.query(sql, [idUsuario]);
-    const row = result?.[0]?.[0];
+    const result = await conexion.query(sql, [idUsuario]);
+    const row = Array.isArray(result) ? result[0]?.[0] : null;
     return row?.SecretFA ?? null;
   } catch (err) {
     console.error("Error obtenerSecretFA:", err);
