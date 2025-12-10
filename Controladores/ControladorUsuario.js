@@ -149,9 +149,9 @@ export async function ControladorValidar2FA(req, res) {
 // ------------------------------------------------------
 export async function ControladorObtenerUsuario(req, res) {
   try {
-    const { Id_Usuario } = req.params;
+    const { idUsuario } = req.params;
 
-    const usuario = await servicioObtenerUsuario(Id_Usuario);
+    const usuario = await servicioObtenerUsuario(idUsuario);
 
     if (!usuario)
       return res.status(404).json({ error: "Usuario no encontrado" });
@@ -170,10 +170,10 @@ export async function ControladorObtenerUsuario(req, res) {
 // ------------------------------------------------------
 export async function ControladorActualizarDatosUsuario(req, res) {
   try {
-    const { Id_Usuario } = req.params;
+    const { idUsuario } = req.params;
     const datos = req.body;
 
-    await servicioActualizarDatosUsuario(Id_Usuario, datos);
+    await servicioActualizarDatosUsuario(idUsuario, datos);
 
     return res.json({ mensaje: "Datos actualizados correctamente" });
 
@@ -189,10 +189,10 @@ export async function ControladorActualizarDatosUsuario(req, res) {
 // ------------------------------------------------------
 export async function ControladorActualizarFotoPerfil(req, res) {
   try {
-    const { Id_Usuario } = req.params;
+    const { idUsuario } = req.params;
     const { FotoPerfil } = req.body;
 
-    await servicioActualizarFotoPerfil(Id_Usuario, FotoPerfil);
+    await servicioActualizarFotoPerfil(idUsuario, FotoPerfil);
 
     return res.json({ mensaje: "Foto actualizada" });
 
@@ -226,7 +226,7 @@ export async function ControladorVerificarCorreo(req, res) {
 // ------------------------------------------------------
 export async function ControladorVerificarToken(req, res) {
   try {
-    const { Id_Usuario, Token } = req.body;
+    const { idUsuario, Token } = req.body;
 
     const resultado = await servicioVerificarTokenRecuperacion(
       Id_Usuario,
