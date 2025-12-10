@@ -1,5 +1,5 @@
 // Datos/pagosData.js
-import conexion from "../Config/db.js";
+import conexion from "../Config/db.mjs";
 
 export function buscarTarjetaPorTelefono(telefono, cb) {
   const sql = `CALL VerificarTarjetaPorTelefono(?)`;
