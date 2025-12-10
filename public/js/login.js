@@ -22,25 +22,39 @@ if (res.ok) {
   localStorage.setItem("usuario", JSON.stringify(data.usuario));
   localStorage.setItem("idUsuario", data.usuario.Id_Usuario);
 
-  const necesita2FA = data.usuario?.necesitaConfigurar2FA || data.necesitaConfigurar2FA;
+const secret = data.usuario?.SecretFA;
 
-  if (necesita2FA) {
-    window.location.href = "ActivarFA.html";
-  } else {
-    window.location.href = "verificarFA.html";
-  }
-} else {
-  if (typeof data.error === "object" && data.error.mensaje) {
-      mostrarMensajeLogin(data.error.mensaje, 4000);
+      const tiene2FA =
+        secret !== null &&
+        secret !== undefined &&
+        secret !== "" &&
+        secret !== "null" &&
+        secret.trim() !== "";
+
+      console.log("¿Tiene 2FA?:", tiene2FA, "Secret:", secret);
+
+      if (!tiene2FA) {
+        // No tiene secreto → debe configurar por primera vez
+        window.location.href = "ActivarFA.html";
+      } else {
+        // Ya tiene secreto → debe ingresar el token
+        window.location.href = "VerificarFA.html";
+      }
+
     } else {
-      mostrarMensajeLogin("Credenciales incorrectas", 4000);
+      // Manejo de errores
+      if (typeof data.error === "object" && data.error.mensaje) {
+        mostrarMensajeLogin(data.error.mensaje, 4000);
+      } else {
+        mostrarMensajeLogin("Credenciales incorrectas", 4000);
+      }
     }
-}
 
   } catch (err) {
-    mostrarMensajeLogin("Error de conexión con el servidor", "error");
     console.error(err);
+    mostrarMensajeLogin("Error de conexión con el servidor", "error");
   }
+
   btn.disabled = false;
   btn.textContent = originalText;
 });
