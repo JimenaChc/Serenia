@@ -25,6 +25,7 @@ document.getElementById("btnVerificar").addEventListener("click", async (e) => {
     }
   } catch (error) {
     console.error("Error al verificar 2FA:", error);
+    mostrarMensaje("Error de conexión con el servidor");
   }
   btn.disabled = false;
   btn.textContent = originalText;
