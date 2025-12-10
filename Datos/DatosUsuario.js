@@ -1,4 +1,4 @@
-import conexion from "../Config/db.js";
+import conexion from "../Config/db.mjs";
 import dotenv from "dotenv";
 dotenv.config();
 
