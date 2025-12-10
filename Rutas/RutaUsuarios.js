@@ -1,44 +1,52 @@
 import express from "express";
+
 import {
-    registrar,
-    login,
-  obtenerUsuario,
-  googleAuth,
-  generarFAUsuario,
-  verificar2FA,
-  obtenerGoogleClientID,
-  recuperarActualizarContrasena,
-  verificarCorreo,
-  verificarTokenFA,
-  obtenerPaises,
-  obtenerUbicacionesDependencias
+  ControladorRegistrarUsuario,
+  ControladorLogin,
+  ControladorGoogleLogin,
+  ControladorObtenerGoogleClientID,
+  ControladorGenerarSecreto,
+  ControladorValidar2FA,
+  ControladorObtenerUsuario,
+  ControladorActualizarDatosUsuario,
+  ControladorActualizarFotoPerfil,
+  ControladorActualizarContrasena,
+  ControladorVerificarCorreo,
+  ControladorVerificarToken,
+  ControladorObtenerPaises,
+  ControladorObtenerDependencias,
 } from "../Controladores/ControladorUsuario.js";
 
 const router = express.Router();
-router.post("/registro", registrar);
-router.post("/login",login);
-router.post("/google-auth", googleAuth);
-router.post("/activar", generarFAUsuario);
-router.post("/verificar", verificar2FA);
-router.post("/verificar-correo", verificarCorreo);
-router.post("/verificar-token", verificarTokenFA);
-router.post("/actualizar-contrasena", recuperarActualizarContrasena);
 
+// Registro y login
+router.post("/registro", ControladorRegistrarUsuario);
+router.post("/login", ControladorLogin);
 
-//obtener google client Id
+// Google
+router.post("/google-auth", ControladorGoogleLogin);
+router.get("/google-client-id", ControladorObtenerGoogleClientID);
 
-router.get("/google-client-id", obtenerGoogleClientID);
-// Obtener datos de un usuario
+// 2FA
+router.post("/activar", ControladorGenerarSecreto);
+router.post("/verificar", ControladorValidar2FA);
 
+// Recuperación de contraseña
+router.post("/verificar-correo", ControladorVerificarCorreo);
+router.post("/verificar-token", ControladorVerificarToken);
+router.post("/actualizar-contrasena", ControladorActualizarContrasena);
 
-router.get("/paises", obtenerPaises);
-router.get("/hijos/:idPadre", obtenerUbicacionesDependencias);
-router.get("/:idUsuario", obtenerUsuario);
+// Ubicaciones
+router.get("/paises", ControladorObtenerPaises);
+router.get("/hijos/:idPadre", ControladorObtenerDependencias);
 
-// Actualizar datos generales (nombre, correo, teléfono, contraseña)
-router.put("/:idUsuario", actualizarDatosUsuario);
+// Usuario
+router.get("/:idUsuario", ControladorObtenerUsuario);
 
-// Actualizar solo la foto de perfil
-router.put("/:idUsuario/foto", actualizarFotoPerfil);
+// Actualizar datos generales
+router.put("/:idUsuario", ControladorActualizarDatosUsuario);
+
+// Actualizar foto
+router.put("/:idUsuario/foto", ControladorActualizarFotoPerfil);
 
 export default router;
