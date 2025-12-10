@@ -10,7 +10,7 @@ async function activar2FA() {
       body: JSON.stringify({ idUsuario })
     });
     const data = await res.json();
-    document.getElementById("codigoSecreto").textContent = data.secreto || data.SecretFA || "No se generó el código";
+    document.getElementById("codigoSecreto").textContent =  data.secret || "No se generó el código";
   } catch (error) {
     console.error("Error al activar 2FA:", error);
   }
