@@ -1,5 +1,5 @@
 // Datos/DatosTableros.js
-import conexion from "../Config/db.js";
+import conexion from "../Config/db.mjs";
 
 export const crearTablero = (nombre, idUsuario, callback) => {
   const sql = `CALL CrearTablero(?,?,NULL,CURDATE())`;
