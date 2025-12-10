@@ -19,7 +19,7 @@ document.getElementById("btnVerificar").addEventListener("click", async (e) => {
 
     if (res.ok) {
       mostrarMensaje("Autenticación completada correctamente");
-      setTimeout(() => window.location.href = "Feed.html", 1000);
+      setTimeout(() => window.location.href = "/Feed.html", 1000);
     } else {
       mostrarMensaje(" Código incorrecto, inténtalo de nuevo");
     }
