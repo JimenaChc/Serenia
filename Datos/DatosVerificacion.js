@@ -1,4 +1,4 @@
-import conexion from "../Config/db.js"
+import conexion from "../Config/db.mjs"
 import { v4 as uuidv4 } from "uuid";
 
 // Crear verificación temporal
