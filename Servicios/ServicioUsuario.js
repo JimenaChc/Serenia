@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
+
 import { OAuth2Client } from "google-auth-library";
 import speakeasy from "speakeasy";
 import bcrypt from "bcrypt";
@@ -23,10 +24,15 @@ import {
 
 const SALT_ROUNDS = 10;
 
+
+// ------------------------------------------------------
+// REGISTRO
+// ------------------------------------------------------
 export async function registrarUsuario(nombre, apellidos, correo, contrasena, telefono, Direccion) {
   try {
     const hash = await bcrypt.hash(contrasena, SALT_ROUNDS);
-    const result = await crearUsuario({
+
+    return await crearUsuario({
       Nombre: nombre,
       Apellidos: apellidos,
       Correo: correo,
@@ -34,43 +40,53 @@ export async function registrarUsuario(nombre, apellidos, correo, contrasena, te
       Telefono: telefono,
       Direccion,
     });
-    return result;
+
   } catch (err) {
     console.error("Error servicio registrarUsuario:", err);
-    throw err;
+    throw new Error("Error registrando usuario");
   }
 }
 
-export function servicioObtenerGoogleClientID() {
-  return obtenerGoogleClientID();
-}
 
+// ------------------------------------------------------
+// LOGIN
+// ------------------------------------------------------
 export async function loginUsuario(correo, contrasena) {
   try {
     const usuario = await buscarPorCorreo(correo);
-    if (!usuario) throw "Correo o contraseña incorrectas";
 
-    if (usuario.Bloqueado === "Bloqueado") throw "Tu cuenta está bloqueada. Restablece tu contraseña.";
+    if (!usuario) {
+      throw { tipo: "credenciales", mensaje: "Correo o contraseña incorrectas" };
+    }
+
+    if (usuario.Bloqueado === "Bloqueado") {
+      throw { tipo: "bloqueado", mensaje: "Tu cuenta está bloqueada. Restablece tu contraseña." };
+    }
 
     const esValida = await bcrypt.compare(contrasena, usuario.Contrasena || "");
 
     if (!esValida) {
-      // incrementar intentos
       await incrementarIntentos(correo);
-      // obtener usuario actualizado
-      const usuarioActualizado = await buscarPorCorreo(correo);
-      const nuevosIntentos = usuarioActualizado?.IntentosFallidos || 0;
-      if (nuevosIntentos >= 4) {
+      const actualizado = await buscarPorCorreo(correo);
+
+      const intentos = actualizado?.IntentosFallidos || 0;
+
+      if (intentos >= 4) {
         await bloquearUsuario(correo);
         throw { tipo: "bloqueado", mensaje: "Tu cuenta ha sido bloqueada. Ve a 'Recuperar contraseña'." };
       }
-      throw { tipo: "credenciales", mensaje: `Credenciales incorrectas. Intentos restantes: ${4 - nuevosIntentos}` };
+
+      throw {
+        tipo: "credenciales",
+        mensaje: `Credenciales incorrectas. Intentos restantes: ${4 - intentos}`,
+      };
     }
 
-    // contraseña correcta: resetear intentos
+    // contraseña correcta
     await resetearIntentos(correo);
 
-    const necesitaConfigurar2FA = !usuario.SecretFA || usuario.SecretFA.trim() === "";
+    const necesitaConfigurar2FA =
+      !usuario.SecretFA || usuario.SecretFA.trim() === "";
 
     return {
       Id_Usuario: usuario.Id_Usuario,
@@ -78,30 +94,36 @@ export async function loginUsuario(correo, contrasena) {
       Correo: usuario.Correo,
       necesitaConfigurar2FA,
     };
+
   } catch (err) {
-    // re-lanzar para controlador
     throw err;
   }
 }
 
+
+// ------------------------------------------------------
+// LOGIN / REGISTRO CON GOOGLE
+// ------------------------------------------------------
 export async function loginORegistrarConGoogle(token) {
   try {
     const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
+
     const payload = ticket.getPayload();
     const { email, given_name, family_name } = payload;
 
-    let usuarioExistente = await buscarPorCorreo(email);
+    let usuario = await buscarPorCorreo(email);
 
-    if (usuarioExistente) {
-      const tiene2FA = usuarioExistente.SecretFA && usuarioExistente.SecretFA.trim() !== "";
-      return { usuario: usuarioExistente, necesitaConfigurar2FA: !tiene2FA };
+    if (usuario) {
+      const tiene2FA = usuario.SecretFA && usuario.SecretFA.trim() !== "";
+      return { usuario, necesitaConfigurar2FA: !tiene2FA };
     }
 
-    // crear usuario nuevo (sin contraseña)
+    // crear usuario nuevo
     await crearUsuario({
       Nombre: given_name,
       Apellidos: family_name || "",
@@ -111,102 +133,159 @@ export async function loginORegistrarConGoogle(token) {
       Direccion: null,
     });
 
-    const nuevoUsuario = await buscarPorCorreo(email);
-    return { usuario: nuevoUsuario, necesitaConfigurar2FA: true };
+    usuario = await buscarPorCorreo(email);
+    return { usuario, necesitaConfigurar2FA: true };
+
   } catch (err) {
     console.error("Error loginORegistrarConGoogle:", err);
-    throw err;
+    throw new Error("Error procesando Google Login");
   }
 }
 
+
+// ------------------------------------------------------
+// 2FA: GENERAR
+// ------------------------------------------------------
 export async function generarSecretoFA(idUsuario) {
   try {
     const secretObj = speakeasy.generateSecret({ length: 20 });
-    const secretBase32 = secretObj.base32;
-    await guardarSecretFA(idUsuario, secretBase32);
-    return { secret: secretBase32, otpauth_url: secretObj.otpauth_url };
+
+    await guardarSecretFA(idUsuario, secretObj.base32);
+
+    return {
+      secret: secretObj.base32,
+      otpauth_url: secretObj.otpauth_url,
+    };
+
   } catch (err) {
     console.error("Error generarSecretoFA:", err);
-    throw err;
+    throw new Error("Error generando secreto 2FA");
   }
 }
 
+
+// ------------------------------------------------------
+// 2FA: VALIDAR
+// ------------------------------------------------------
 export async function validarCodigoFA(idUsuario, codigo) {
   try {
     const secreto = await obtenerSecretFA(idUsuario);
     if (!secreto) return false;
-    const isValid = speakeasy.totp.verify({
+
+    return speakeasy.totp.verify({
       secret: secreto,
       encoding: "base32",
       token: codigo,
       window: 1,
     });
-    return isValid;
+
   } catch (err) {
     console.error("Error validarCodigoFA:", err);
-    throw err;
+    throw new Error("Error validando código 2FA");
   }
 }
 
-// Otros servicios adaptados a async/await:
+
+// ------------------------------------------------------
+// OBTENER USUARIO
+// ------------------------------------------------------
 export async function servicioObtenerUsuario(idUsuario) {
   try {
-    const u = await ObtenerUsuario(idUsuario);
-    return u;
+    return await ObtenerUsuario(idUsuario);
   } catch (err) {
-    throw err;
+    throw new Error("Error obteniendo usuario");
   }
 }
 
+
+// ------------------------------------------------------
+// ACTUALIZAR DATOS
+// ------------------------------------------------------
 export async function servicioActualizarDatosUsuario(idUsuario, datos) {
   try {
-    const res = await ActualizarDatosUsuario(idUsuario, datos);
-    return res;
-  } catch (err) {
-    throw err;
+    return await ActualizarDatosUsuario(idUsuario, datos);
+  } catch {
+    throw new Error("Error actualizando datos del usuario");
   }
 }
 
+
+// ------------------------------------------------------
+// ACTUALIZAR FOTO
+// ------------------------------------------------------
 export async function servicioActualizarFotoPerfil(idUsuario, FotoPerfil) {
   try {
-    const res = await ActualizarFotoPerfil(idUsuario, FotoPerfil);
-    return res;
-  } catch (err) {
-    throw err;
+    return await ActualizarFotoPerfil(idUsuario, FotoPerfil);
+  } catch {
+    throw new Error("Error actualizando foto de perfil");
   }
 }
 
+
+// ------------------------------------------------------
+// ACTUALIZAR CONTRASEÑA
+// ------------------------------------------------------
 export async function servicioActualizarContrasena(correo, nuevaContrasena) {
   try {
     const usuario = await buscarPorCorreo(correo);
-    if (!usuario) throw "Usuario no encontrado";
+    if (!usuario) throw new Error("Usuario no encontrado");
+
     const hash = await bcrypt.hash(nuevaContrasena, 10);
+
     await ActualizarContrasena(usuario.Id_Usuario, hash);
     await resetearIntentos(correo);
+
     return { mensaje: "Contraseña actualizada correctamente" };
+
   } catch (err) {
     throw err;
   }
 }
 
+
+// ------------------------------------------------------
+// RECUPERAR CONTRASEÑA – VALIDAR CORREO
+// ------------------------------------------------------
 export async function servicioVerificarCorreoRecuperacion(correo) {
   const usuario = await buscarPorCorreo(correo);
-  if (!usuario) throw "Correo no encontrado";
+
+  if (!usuario) {
+    throw new Error("Correo no encontrado");
+  }
+
   return { mensaje: "Correo válido", Id_Usuario: usuario.Id_Usuario };
 }
 
+
+// ------------------------------------------------------
+// RECUPERAR CONTRASEÑA – VALIDAR TOKEN
+// ------------------------------------------------------
 export async function servicioVerificarTokenRecuperacion(Id_Usuario, token) {
   try {
     const secreto = await obtenerSecretFA(Id_Usuario);
-    if (!secreto) throw "Token no encontrado";
-    const valido = speakeasy.totp.verify({ secret: secreto, encoding: "base32", token, window: 1 });
-    if (!valido) throw "Token inválido o expirado";
+
+    if (!secreto) throw new Error("Token no encontrado");
+
+    const valido = speakeasy.totp.verify({
+      secret: secreto,
+      encoding: "base32",
+      token,
+      window: 1,
+    });
+
+    if (!valido) throw new Error("Token inválido o expirado");
+
     return { mensaje: "Token válido" };
+
   } catch (err) {
     throw err;
   }
 }
 
+
+// ------------------------------------------------------
+// UBICACIONES
+// ------------------------------------------------------
 export async function servicioObtenerPaises() {
   return await obtenerPaises();
 }
