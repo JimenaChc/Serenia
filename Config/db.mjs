@@ -10,16 +10,14 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-
 });
 
-const conexion = 
+const conexion = {
   query: async (sql, params = []) => {
     const [rows] = await pool.query(sql, params);
     return rows;
   },
-
-  pool,
+  pool
 };
 
 export default conexion;
