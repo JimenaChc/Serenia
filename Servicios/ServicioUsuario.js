@@ -100,6 +100,10 @@ export async function loginUsuario(correo, contrasena) {
   }
 }
 
+export function servicioObtenerGoogleClientID() {
+  return process.env.GOOGLE_CLIENT_ID;
+}
+
 
 // ------------------------------------------------------
 // LOGIN / REGISTRO CON GOOGLE
