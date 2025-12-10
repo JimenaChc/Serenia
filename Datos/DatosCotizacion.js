@@ -1,5 +1,5 @@
 // Datos/DatosCotizacion.js
-import conexion from "../Config/db.js";
+import conexion from "../Config/db.mjs";
 
 // Crear una nueva cotización
 export function crearCotizacion(cotizacion, callback) {
