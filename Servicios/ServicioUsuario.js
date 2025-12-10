@@ -153,21 +153,29 @@ export async function loginORegistrarConGoogle(token) {
 // 2FA: GENERAR
 // ------------------------------------------------------
 export async function generarSecretoFA(idUsuario) {
-  try {
-    const secretObj = speakeasy.generateSecret({ length: 20 });
+  const existente = await obtenerSecretFA(idUsuario);
 
-    await guardarSecretFA(idUsuario, secretObj.base32);
-
+  if (existente && existente.trim() !== "") {
     return {
-      secret: secretObj.base32,
-      otpauth_url: secretObj.otpauth_url,
+      secret: existente,
+      otpauth_url: speakeasy.otpauthURL({
+        secret: existente,
+        label: `Usuario-${idUsuario}`,
+        issuer: "TuSistema",
+      }),
     };
-
-  } catch (err) {
-    console.error("Error generarSecretoFA:", err);
-    throw new Error("Error generando secreto 2FA");
   }
+
+  const secretObj = speakeasy.generateSecret({ length: 20 });
+
+  await guardarSecretFA(idUsuario, secretObj.base32);
+
+  return {
+    secret: secretObj.base32,
+    otpauth_url: secretObj.otpauth_url,
+  };
 }
+
 
 
 // ------------------------------------------------------
