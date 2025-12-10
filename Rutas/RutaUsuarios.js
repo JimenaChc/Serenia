@@ -2,7 +2,6 @@ import express from "express";
 import {
     registrar,
     login,
-  actualizarDatosUsuario,
   actualizarFotoPerfil,
   obtenerUsuario,
   googleAuth,
