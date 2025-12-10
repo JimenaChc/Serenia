@@ -98,7 +98,7 @@ export async function ControladorGoogleLogin(req, res) {
 // GOOGLE CLIENT ID
 export function ControladorObtenerGoogleClientID(req, res) {
   const id = servicioObtenerGoogleClientID();
-  return res.json({ client_id: id });
+  return res.json({ clientId: id });
 }
 
 
