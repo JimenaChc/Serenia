@@ -2,86 +2,102 @@ import conexion from "../Config/db.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-//Registro
-export async function crearUsuario(usuario){
-  try{
-  const sql = `CALL RegistrarUsuario(?, ?, ?, ?, ?,?)`;
-  const [result] = await conexion.query(
-    sql, [
-    [usuario.Nombre, usuario.Apellidos, usuario.Correo, usuario.Contrasena, usuario.Telefono, usuario.Direccion],
-    callback
-  ]);
-      return result[0];
+// Nota: en Linux / Render los nombres de tabla/proc son case-sensitive. Usa los nombres exactos.
+export async function crearUsuario(usuario) {
+  try {
+    const sql = `CALL RegistrarUsuario(?, ?, ?, ?, ?, ?)`;
+    // Cuando haces CALL, mysql2 devuelve un array con resultsets. Aquí devolvemos el primer resultset si existe.
+    const rows = await conexion.query(sql, [
+      usuario.Nombre,
+      usuario.Apellidos,
+      usuario.Correo,
+      usuario.Contrasena,
+      usuario.Telefono,
+      usuario.Direccion,
+    ]);
+    // rows puede ser un array de resultsets; regresamos la info más probable
+    return Array.isArray(rows) && rows.length ? rows[0] : rows;
   } catch (err) {
     console.error("Error crearUsuario:", err);
     throw err;
   }
-};
-
-
-//El login
-export function buscarPorCorreo(correo, callback) {
-  const sql = `CALL LoginUsuario(?)`;
-
-  conexion.query(sql, [correo])
-    .then(rows => {
-      const usuario = rows?.[0]?.[0] || null;
-      callback(null, usuario);
-    })
-    .catch(err => {
-      callback(err, null);
-    });
 }
-//Client ID Google 
+
+export async function buscarPorCorreo(correo) {
+  try {
+    const sql = `CALL LoginUsuario(?)`;
+    const rows = await conexion.query(sql, [correo]);
+    // rows suele venir como: [ [ {Id_Usuario,...} ], ... ]
+    const usuario = Array.isArray(rows) ? rows[0]?.[0] ?? null : rows?.[0] ?? null;
+    return usuario;
+  } catch (err) {
+    console.error("Error buscarPorCorreo:", err);
+    throw err;
+  }
+}
+
 export function obtenerGoogleClientID() {
   return process.env.GOOGLE_CLIENT_ID;
 }
 
-
-// Obtener un usuario por ID
 export async function ObtenerUsuario(idUsuario) {
-  const sql = `CALL ObtenerUsuario(?)`;
-  const result = await conexion.query(sql, [idUsuario]);
-  return result[0];
+  try {
+    const sql = `CALL ObtenerUsuario(?)`;
+    const rows = await conexion.query(sql, [idUsuario]);
+    return Array.isArray(rows) ? rows[0]?.[0] ?? null : rows?.[0] ?? null;
+  } catch (err) {
+    console.error("Error ObtenerUsuario:", err);
+    throw err;
+  }
 }
 
-// Actualizar datos generales del usuario
-export function ActualizarDatosUsuario(idUsuario, datos, callback) {
-  const sql = `
-    CALL ActualizarDatosUsuario(?,?,?,?,?)
-  `;
-  conexion.query(
-    sql,
-    [datos.Nombre,datos.Apellidos, datos.Telefono, datos.Correo, datos.Contrasena, idUsuario],
-    callback
-  );
+export async function ActualizarDatosUsuario(idUsuario, datos) {
+  try {
+    const sql = `CALL ActualizarDatosUsuario(?,?,?,?,?,?)`;
+    // Asegúrate que el SP tenga ese orden de params; ajusta si es distinto
+    const rows = await conexion.query(sql, [
+      datos.Nombre,
+      datos.Apellidos,
+      datos.Telefono,
+      datos.Correo,
+      datos.Contrasena,
+      idUsuario,
+    ]);
+    return rows;
+  } catch (err) {
+    console.error("Error ActualizarDatosUsuario:", err);
+    throw err;
+  }
 }
 
-// Actualizar la foto de perfil
-export function ActualizarFotoPerfil(idUsuario, urlFoto, callback) {
-  const sql = `
-    CALL ActualizarFotoPerfil(?,?)
-  `;
-  conexion.query(sql, [idUsuario,urlFoto], callback);
+export async function ActualizarFotoPerfil(idUsuario, urlFoto) {
+  try {
+    const sql = `CALL ActualizarFotoPerfil(?,?)`;
+    const rows = await conexion.query(sql, [idUsuario, urlFoto]);
+    return rows;
+  } catch (err) {
+    console.error("Error ActualizarFotoPerfil:", err);
+    throw err;
+  }
 }
 
 export async function guardarSecretFA(idUsuario, secret) {
   try {
     const sql = `CALL guardarSecretFA(?,?)`;
-    const result = await conexion.query(sql, [idUsuario, secret]);
-    const rows = Array.isArray(result) ? result[0] : result;
-    return rows;
+    const rows = await conexion.query(sql, [idUsuario, secret]);
+    // normalizar
+    return Array.isArray(rows) ? rows[0] : rows;
   } catch (err) {
     console.error("Error guardarSecretFA:", err);
     throw err;
   }
 }
-// Obtener secreto 2FA para validar el código
+
 export async function obtenerSecretFA(idUsuario) {
   try {
     const sql = `CALL validarSecretFA(?)`;
-    const result = await conexion.query(sql, [idUsuario]);
-    const row = Array.isArray(result) ? result[0]?.[0] : null;
+    const rows = await conexion.query(sql, [idUsuario]);
+    const row = Array.isArray(rows) ? rows[0]?.[0] ?? null : rows?.[0] ?? null;
     return row?.SecretFA ?? null;
   } catch (err) {
     console.error("Error obtenerSecretFA:", err);
@@ -89,24 +105,22 @@ export async function obtenerSecretFA(idUsuario) {
   }
 }
 
-// Actualizar contraseña 
-export async function ActualizarContrasena(correo, hash) {
+export async function ActualizarContrasena(correoOId, hash) {
   try {
     const sql = `CALL ActualizarContrasena(?, ?)`;
-    const [result] = await conexion.query(sql, [correo, hash]);
-    return result;
+    const rows = await conexion.query(sql, [correoOId, hash]);
+    return rows;
   } catch (err) {
     console.error("Error ActualizarContrasena:", err);
     throw err;
   }
 }
 
-
 export async function incrementarIntentos(correo) {
   try {
     const sql = `CALL IncrementarIntentos(?)`;
-    const [result] = await conexion.query(sql, [correo]);
-    return result;
+    const rows = await conexion.query(sql, [correo]);
+    return rows;
   } catch (err) {
     console.error("Error incrementarIntentos:", err);
     throw err;
@@ -116,8 +130,8 @@ export async function incrementarIntentos(correo) {
 export async function bloquearUsuario(correo) {
   try {
     const sql = `CALL BloquearUsuario(?)`;
-    const [result] = await conexion.query(sql, [correo]);
-    return result;
+    const rows = await conexion.query(sql, [correo]);
+    return rows;
   } catch (err) {
     console.error("Error bloquearUsuario:", err);
     throw err;
@@ -127,8 +141,9 @@ export async function bloquearUsuario(correo) {
 export async function resetearIntentos(correo) {
   try {
     const sql = `UPDATE usuarios SET IntentosFallidos = 0, Bloqueado = 'Activo' WHERE Correo = ?`;
-    const result = await conexion.query(sql, [correo]);
-    return Array.isArray(result) ? result[0] : result;
+    const rows = await conexion.query(sql, [correo]);
+    // UPDATE devuelve metadata; devolvemos rows directamente
+    return rows;
   } catch (err) {
     console.error("Error resetearIntentos:", err);
     throw err;
@@ -138,7 +153,7 @@ export async function resetearIntentos(correo) {
 export async function obtenerPaises() {
   try {
     const sql = "SELECT Id, Descripcion FROM ubicaciones WHERE Dependencia IS NULL";
-    const [rows] = await conexion.query(sql);
+    const rows = await conexion.query(sql);
     return rows;
   } catch (err) {
     console.error("Error obtenerPaises:", err);
@@ -146,11 +161,10 @@ export async function obtenerPaises() {
   }
 }
 
-
 export async function obtenerUbiPorDependencia(idPadre) {
   try {
     const sql = "SELECT Id, Descripcion FROM ubicaciones WHERE Dependencia = ?";
-    const [rows] = await conexion.query(sql, [idPadre]);
+    const rows = await conexion.query(sql, [idPadre]);
     return rows;
   } catch (err) {
     console.error("Error obtenerUbiPorDependencia:", err);
