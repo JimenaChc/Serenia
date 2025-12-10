@@ -1,198 +1,251 @@
-import { registrarUsuario, servicioObtenerGoogleClientID, loginORegistrarConGoogle,
-   generarSecretoFA,validarCodigoFA, loginUsuario , servicioActualizarDatosUsuario,
-   servicioActualizarFotoPerfil,servicioObtenerUsuario,
-   servicioActualizarContrasenaRecuperacion,servicioVerificarCorreoRecuperacion,servicioVerificarTokenRecuperacion,
-servicioObtenerDependencias,servicioObtenerPaises
- } from "../Servicios/ServicioUsuario.js";
+import {
+  registrarUsuario,
+  loginUsuario,
+  loginORegistrarConGoogle,
+  servicioObtenerGoogleClientID,
+  generarSecretoFA,
+  validarCodigoFA,
+  servicioObtenerUsuario,
+  servicioActualizarDatosUsuario,
+  servicioActualizarFotoPerfil,
+  servicioActualizarContrasena,
+  servicioVerificarCorreoRecuperacion,
+  servicioVerificarTokenRecuperacion,
+  servicioObtenerPaises,
+  servicioObtenerDependencias,
+} from "../Servicios/ServicioUsuario.js";
 
-export async function registrar(req, res) {
-  const { Nombre, Apellidos, Correo, Contrasena, Telefono, Direccion } = req.body;
-  console.log(" Datos recibidos en registrarUsuario:", req.body);
-  console.log(" Valor de Direccion:", Direccion);
+// ------------------------------
+// REGISTRO
+// ------------------------------
+export async function ControladorRegistrarUsuario(req, res) {
   try {
-    console.log("Datos recibidos en registrarUsuario:", req.body);
-    await registrarUsuario(Nombre, Apellidos, Correo, Contrasena, Telefono, Direccion);
-    res.status(200).json({ mensaje: "Usuario registrado correctamente" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al registrar usuario" });
-  }
-}
+    const {
+      Nombre,
+      Apellidos,
+      Correo,
+      Contrasena,
+      Telefono,
+      Direccion,
+    } = req.body;
 
-export async function obtenerGoogleClientID(req, res) {
-  try {
-    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const resultado = await registrarUsuario(
+      Nombre,
+      Apellidos,
+      Correo,
+      Contrasena,
+      Telefono,
+      Direccion
+    );
 
-    if (!clientId) {
-      console.error("No se encontró GOOGLE_CLIENT_ID");
-      return res.status(500).json({ error: "GOOGLE_CLIENT_ID no configurado" });
-    }
-
-    console.log("Enviando GOOGLE_CLIENT_ID al cliente");
-    res.json({ clientId }); 
-  } catch (error) {
-    console.error("Error al obtener GOOGLE_CLIENT_ID:", error);
-    res.status(500).json({ error: "Error al obtener GOOGLE_CLIENT_ID" });
-  }
-}
-
-export async function login(req, res) {
-  const { Correo, Contrasena } = req.body;
-
-  try {
-    const usuario = await loginUsuario(Correo, Contrasena);
-    res.status(200).json({
-      mensaje: "Login exitoso",
-      usuario,
+    res.status(201).json({
+      mensaje: "Usuario registrado exitosamente",
+      resultado,
     });
   } catch (error) {
-    if (typeof error === "object" && error !== null) {
-      return res.status(401).json({ error });
-    }
-   
-    res.status(401).json({ error: { mensaje: error?.toString() || "Credenciales incorrectas" } });
+    console.error("Error Registro:", error);
+    res.status(500).json({ error: "Error al registrar usuario", detalle: error });
   }
 }
 
-
-export async function googleAuth(req, res) {
-  const { token } = req.body;
-
+// ------------------------------
+// LOGIN NORMAL
+// ------------------------------
+export async function ControladorLogin(req, res) {
   try {
-    const { usuario, necesitaConfigurar2FA } = await loginORegistrarConGoogle(token);
-    res.status(200).json({
-      mensaje: "Autenticación exitosa con Google",
-      usuario,
-      necesitaConfigurar2FA
-    });
+    const { Correo, Contrasena } = req.body;
+
+    const resultado = await loginUsuario(Correo, Contrasena);
+
+    res.json(resultado);
   } catch (error) {
-    res.status(500).json({ error: error.toString() });
+    console.error("Error Login:", error);
+
+    if (error?.tipo === "bloqueado") {
+      return res.status(423).json({
+        error: error.mensaje,
+      });
+    }
+
+    if (error?.tipo === "credenciales") {
+      return res.status(401).json({
+        error: error.mensaje,
+      });
+    }
+
+    res.status(500).json({ error: "Error en el inicio de sesión" });
   }
 }
 
-// Obtener usuario por ID
-export async function obtenerUsuario(req, res) {
-  const { idUsuario } = req.params;
+// ------------------------------
+// LOGIN / REGISTRO CON GOOGLE
+// ------------------------------
+export async function ControladorGoogleLogin(req, res) {
   try {
-    const usuario = await servicioObtenerUsuario(idUsuario);
+    const { token } = req.body;
+    const resultado = await loginORegistrarConGoogle(token);
+    res.json(resultado);
+  } catch (error) {
+    console.error("Error Login Google:", error);
+    res.status(500).json({ error: "Error al procesar Google Login" });
+  }
+}
+
+// Obtener clientID
+export function ControladorObtenerGoogleClientID(req, res) {
+  const id = servicioObtenerGoogleClientID();
+  res.json({ client_id: id });
+}
+
+// ------------------------------
+// 2FA: GENERAR
+// ------------------------------
+export async function ControladorGenerarSecreto(req, res) {
+  try {
+    const { Id_Usuario } = req.body;
+    const resultado = await generarSecretoFA(Id_Usuario);
+    res.json(resultado);
+  } catch (error) {
+    console.error("Error generar 2FA:", error);
+    res.status(500).json({ error: "Error al generar código 2FA" });
+  }
+}
+
+// ------------------------------
+// 2FA: VALIDAR
+// ------------------------------
+export async function ControladorValidar2FA(req, res) {
+  try {
+    const { Id_Usuario, Codigo } = req.body;
+
+    const valido = await validarCodigoFA(Id_Usuario, Codigo);
+
+    if (!valido) return res.status(401).json({ error: "Código incorrecto" });
+
+    res.json({ mensaje: "Código válido" });
+  } catch (error) {
+    console.error("Error validar 2FA:", error);
+    res.status(500).json({ error: "Error validando el código" });
+  }
+}
+
+// ------------------------------
+// OBTENER PERFIL
+// ------------------------------
+export async function ControladorObtenerUsuario(req, res) {
+  try {
+    const { Id_Usuario } = req.params;
+
+    const usuario = await servicioObtenerUsuario(Id_Usuario);
     if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
-    res.status(200).json(usuario);
+
+    res.json(usuario);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al obtener usuario" });
+    console.error("Error obtener usuario:", error);
+    res.status(500).json({ error: "Error obteniendo usuario" });
   }
 }
 
-// Actualizar datos generales
-export async function actualizarDatosUsuario(req, res) {
-  const { idUsuario } = req.params;
-  const datos = req.body;
+// ------------------------------
+// ACTUALIZAR PERFIL
+// ------------------------------
+export async function ControladorActualizarDatosUsuario(req, res) {
   try {
-    const resultado = await servicioActualizarDatosUsuario(idUsuario, datos);
-    res.status(200).json(resultado);
+    const { Id_Usuario } = req.params;
+    const datos = req.body;
+
+    await servicioActualizarDatosUsuario(Id_Usuario, datos);
+
+    res.json({ mensaje: "Datos actualizados correctamente" });
   } catch (error) {
-    console.error(error);
+    console.error("Error actualizar datos:", error);
     res.status(500).json({ error: "Error al actualizar datos" });
   }
 }
 
-// Actualizar foto de perfil
-export async function actualizarFotoPerfil(req, res) {
-  const { idUsuario } = req.params;
-  const { FotoPerfil } = req.body;
+// ------------------------------
+// ACTUALIZAR FOTO
+// ------------------------------
+export async function ControladorActualizarFotoPerfil(req, res) {
   try {
-    const resultado = await servicioActualizarFotoPerfil(idUsuario, FotoPerfil);
-    res.status(200).json(resultado);
+    const { Id_Usuario } = req.params;
+    const { FotoPerfil } = req.body;
+
+    await servicioActualizarFotoPerfil(Id_Usuario, FotoPerfil);
+
+    res.json({ mensaje: "Foto actualizada" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al actualizar foto de perfil" });
+    console.error("Error actualizar foto:", error);
+    res.status(500).json({ error: "Error al actualizar foto" });
   }
 }
 
-// Generar 2FA y enviar secreto al usuario
-export async function generarFAUsuario(req, res) {
-  const { idUsuario } = req.body;
+// ------------------------------
+// RECUPERAR CONTRASEÑA: VALIDAR CORREO
+// ------------------------------
+export async function ControladorVerificarCorreo(req, res) {
   try {
-   const result = await generarSecretoFA(idUsuario); // ahora devuelve {secret, otpauth_url}
-    res.json({
-      mensaje: "Secreto generado. Configura tu app Google Authenticator.",
-      secreto: result.secret,
-      otpauth_url: result.otpauth_url
-    });
-  } catch (error) {
-    console.error("Controlador -> generarFAUsuario error:", error);
-    res.status(500).json({ error: "Error al generar 2FA" });
-  }
-}
-
-// Verificar el código TOTP ingresado por el usuario
-export async function verificar2FA(req, res) {
-  const { idUsuario, codigo } = req.body;
-  try {
-    const esValido = await validarCodigoFA(idUsuario, codigo);
-    if (!esValido) return res.status(401).json({ error: "Código incorrecto" });
-    res.json({ mensaje: "2FA verificado correctamente" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al verificar 2FA" });
-  }
-}
-
-export async function verificarCorreo(req, res) {
-  const { correo } = req.body;
-  try {
-    const resultado = await servicioVerificarCorreoRecuperacion(correo);
-    res.status(200).json(resultado);
-  } catch (error) {
-    res.status(404).json({ error });
-  }
-}
-
-// Paso 2: Verificar token
-export async function verificarTokenFA(req, res) {
-  const { correo, token } = req.body;
-
-  try {
-    // Busca primero el usuario por correo
-    const resultadoCorreo = await servicioVerificarCorreoRecuperacion(correo);
-    const { Id_Usuario } = resultadoCorreo;
-
-    const resultado = await servicioVerificarTokenRecuperacion(Id_Usuario, token);
-    res.status(200).json(resultado);
-  } catch (error) {
-    res.status(401).json({ error });
-  }
-}
-
-// Paso 3: Actualizar contraseña
-export async function recuperarActualizarContrasena(req, res) {
-  const { correo, nuevaContrasena } = req.body;
-
-  try {
-    const resultado = await servicioActualizarContrasenaRecuperacion(correo, nuevaContrasena);
+    const { Correo } = req.body;
+    const resultado = await servicioVerificarCorreoRecuperacion(Correo);
     res.json(resultado);
   } catch (error) {
-    console.error("Error en servidor:", error);
-    res.status(500).json({ error: "Error al actualizar la contraseña" });
+    console.error("Error verificar correo:", error);
+    res.status(404).json({ error: error });
   }
 }
 
-export async function obtenerPaises(req, res) {
+// ------------------------------
+// RECUPERAR CONTRASEÑA: VALIDAR TOKEN
+// ------------------------------
+export async function ControladorVerificarToken(req, res) {
   try {
-    const data = await servicioObtenerPaises(null);
-    res.json(data);
+    const { Id_Usuario, Token } = req.body;
+
+    const resultado = await servicioVerificarTokenRecuperacion(Id_Usuario, Token);
+
+    res.json(resultado);
   } catch (error) {
-    res.status(500).json({ error });
+    console.error("Error verificar token:", error);
+    res.status(400).json({ error: error });
   }
 }
 
-export async function obtenerUbicacionesDependencias(req, res) {
-  const { idPadre } = req.params;
-
+// ------------------------------
+// ACTUALIZAR CONTRASEÑA
+// ------------------------------
+export async function ControladorActualizarContrasena(req, res) {
   try {
-    const data = await servicioObtenerDependencias(idPadre);
-    res.json(data);
+    const { Correo, NuevaContrasena } = req.body;
+
+    const resultado = await servicioActualizarContrasena(Correo, NuevaContrasena);
+
+    res.json(resultado);
   } catch (error) {
-    res.status(500).json({ error });
+    console.error("Error actualizar contraseña:", error);
+    res.status(500).json({ error: "Error al actualizar contraseña" });
+  }
+}
+
+// ------------------------------
+// UBICACIONES
+// ------------------------------
+export async function ControladorObtenerPaises(req, res) {
+  try {
+    const resultado = await servicioObtenerPaises();
+    res.json(resultado);
+  } catch (error) {
+    console.error("Error obtener paises:", error);
+    res.status(500).json({ error: "Error al obtener ubicaciones" });
+  }
+}
+
+export async function ControladorObtenerDependencias(req, res) {
+  try {
+    const { idPadre } = req.params;
+    const resultado = await servicioObtenerDependencias(idPadre);
+    res.json(resultado);
+  } catch (error) {
+    console.error("Error obtener dependencias:", error);
+    res.status(500).json({ error: "Error al obtener dependencias" });
   }
 }
