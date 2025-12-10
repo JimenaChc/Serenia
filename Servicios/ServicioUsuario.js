@@ -82,16 +82,17 @@ export async function loginUsuario(correo, contrasena) {
       };
     }
 
-    // contraseña correcta
     await resetearIntentos(correo);
 
     const necesitaConfigurar2FA =
       !usuario.SecretFA || usuario.SecretFA.trim() === "";
 
     return {
-      Id_Usuario: usuario.Id_Usuario,
-      Nombre: usuario.Nombre,
-      Correo: usuario.Correo,
+      usuario: {
+        Id_Usuario: usuario.Id_Usuario,
+        Nombre: usuario.Nombre,
+        Correo: usuario.Correo,
+      },
       necesitaConfigurar2FA,
     };
 
@@ -99,6 +100,7 @@ export async function loginUsuario(correo, contrasena) {
     throw err;
   }
 }
+
 
 export function servicioObtenerGoogleClientID() {
   return process.env.GOOGLE_CLIENT_ID;
