@@ -108,9 +108,9 @@ export function ControladorObtenerGoogleClientID(req, res) {
 // ------------------------------------------------------
 export async function ControladorGenerarSecreto(req, res) {
   try {
-    const { Id_Usuario } = req.body;
+    const { idUsuario } = req.body;
 
-    const resultado = await generarSecretoFA(Id_Usuario);
+    const resultado = await generarSecretoFA(idUsuario);
 
     return res.json(resultado);
 
@@ -128,9 +128,9 @@ export async function ControladorGenerarSecreto(req, res) {
 // ------------------------------------------------------
 export async function ControladorValidar2FA(req, res) {
   try {
-    const { Id_Usuario, Codigo } = req.body;
+    const { idUsuario, codigo } = req.body;
 
-    const valido = await validarCodigoFA(Id_Usuario, Codigo);
+    const valido = await validarCodigoFA(idUsuario, codigo);
 
     if (!valido)
       return res.status(401).json({ error: "Código incorrecto" });
